@@ -1,0 +1,63 @@
+/** \page tstqnewton Quasi-Newton Method with trust-region 
+
+We solve the Rosenbrock problem using a Quasi-Newton method with
+BFGS update for the Hessian.  The implemented trust-region method is 
+the dogleg method.  Other valid globalization strategies are 
+line-search and trust region parallel direct search method.  
+An iteration history is written to file \a tstqnewton.out.
+
+\code
+   //
+   // Test program for Quasi-Newton optimization objects
+   //
+
+   #include <fstream>
+
+   #include "OptQNewton.h"
+   #include "NLF.h"
+   #include "tstfcn.h"
+
+   using NEWMAT::ColumnVector;
+   using namespace OPTPP;
+
+   void update_model(int, int, ColumnVector) {}
+
+   int main ()
+   {
+     int n = 2;
+  
+     static char *status_file = {"tstqnewton.out"};
+
+
+     //  Create a Nonlinear problem object
+     NLF1 nlp(n,rosen,init_rosen);
+  
+     nlp.setIsExpensive(true);
+
+     //  Create a "Tolerances" object and set the tolerances
+     TOLS tol;         
+     tol.setDefaultTol();
+     tol.setFTol(1.e-9);    // Set convergence tolerance to 1.e-9 
+     tol.setMaxIter(200);   // Set maximum number of outer iterations to 200
+  
+     //  Build a Quasi-Newton object and optimize 
+     OptQNewton objfcn(&nlp,tol);   
+
+     if (!objfcn.setOutputFile(status_file, 0))
+       cerr << "main: output file open failed" << endl;
+
+     objfcn.setTRSize(100.); // Set initial trust region radius to 100
+     objfcn.optimize();
+
+     objfcn.printStatus("Solution from quasi-newton");
+     objfcn.cleanup();	 
+
+   }
+\endcode
+<p> <a href="BoundConstrainedProblems.html"> Next Section: Bound-constrained
+	minimization</a> |  <a href="Classification.html">
+		        Back to Solvers Page</a> </p> 
+
+Last revised <em> September 14, 2006 </em>.
+
+*/

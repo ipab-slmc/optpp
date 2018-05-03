@@ -1,0 +1,62 @@
+/** \page tstnips Nonlinear interior-point method with backtracking line-search
+ 
+We use OptNIPS, which is a nonlinear interior-point algorithm that requires 
+analytic Hessians, to solve problem 65 (hs65) from the Hock and Schittkowski 
+suite of nonlinear programming problems.  We limit the number of backtrack
+iterations to seven in the linesearch routine and use the residual of the 
+first order optimality conditions as the merit function. 
+
+Moreover, we activate
+a method to restore infeasibility, if any, with respect to the inequality constraints
+in the problem formulation. We set the maximum number of iterations to five in the 
+feasibility recovery method.  The default number of iterations is three.  Each iteration 
+requires a constraint and constraint gradient evaluation. 
+
+\code
+
+   #include <iostream>
+   #include <fstream>
+
+   #include "NLF.h"
+   #include "OptNIPS.h"
+   #include "hockfcns.h"
+
+   using NEWMAT::ColumnVector;
+
+   using namespace OPTPP;
+
+
+   void update_model(int, int, ColumnVector) {}
+
+   int main ()
+   {
+     int n = 3;
+
+     static char *status_file = {"tsthock65.out"};
+
+     //  Create a Constrained Nonlinear problem object
+     NLF2 nips(n,hs65,init_hs65,create_constraint_hs65);
+
+     //  Build a finite-difference NIPS object and optimize
+     OptNIPS objfcn(&nips, update_model);
+     objfcn.setOutputFile(status_file, 0);
+     objfcn.setFcnTol(1.0e-06);
+     objfcn.setMaxIter(150);
+     objfcn.setSearchStrategy(LineSearch);
+     objfcn.setMaxBacktrackIter(7);
+     objfcn.setMeritFcn(NormFmu);
+     objfcn.setFeasibilityRecovery(true);
+     objfcn.setMaxFeasIter(5);
+     objfcn.optimize();
+     objfcn.printStatus("Solution from nips");
+     objfcn.cleanup();
+
+
+   }
+\endcode
+<p> <a href="tstnpsol.html"> Next Section: NPSOL wrapper 
+</a> |  <a href="Classification.html"> Back to Solvers Page</a> </p> 
+
+Last revised <em> September 14, 2006 </em> .
+
+*/

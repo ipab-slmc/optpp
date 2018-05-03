@@ -1,0 +1,208 @@
+/** \page tsttrpds Optimizing with Trust-Region Parallel Direct Search (TRPDS) 
+
+TRPDS combines the inherent parallelism in PDS with the fast
+convergence properties of Newton methods. The controlling framework is
+identical to the standard trust-region algorithm, but the PDS
+algorithm is used to solve the trust-region subproblem.
+
+In this example, we highlight the steps needed to take advantage of
+parallel capabilities and to set up TRPDS.  Further information and
+examples for setting up and solving a problem can be found in the <a
+href="SetUp.html"> Setting up and Solving an Optimization Problem</a>
+section
+
+First, include the header files and subroutine declarations.
+
+<table>
+<tr><td>
+\code
+   #ifdef HAVE_CONFIG_H
+   #include "OPT++_config.h"
+   #endif
+
+   #include <string>
+   #include <iostream>
+   #include <fstream>
+   #ifdef HAVE_STD
+   #include <cstdio>
+   #else
+   #include <stdio.h>
+   #endif
+
+   #ifdef WITH_MPI
+   #include "mpi.h"
+   #endif
+
+   #include "NLF.h"
+   #include "NLP2.h"
+   #include "BoundConstraint.h"
+   #include "CompoundConstraint.h"
+   #include "OptConstrQNewton.h"
+   #include "tstfcn.h"
+   #include "ioformat.h"
+
+   using NEWMAT::ColumnVector;
+   using std::cerr;
+ 
+   using namespace OPTPP;
+
+   void SetupTestProblem(string test_id, USERFCN0 *test_problem, 
+   		         INITFCN *init_problem);
+   void update_model(int, int, ColumnVector) {}
+\endcode
+</table>
+
+After an argument check, initialize MPI.  This does not need to be
+done within an "ifdef", but if you want the option of also building a
+serial version of your problem, then it should be.  (Note: An argument
+check is used here because this example is set up to work with
+multiple problems.  Such a check is not required by OPT++.)
+
+
+<table>
+<tr><td>
+\code
+   int main (int argc, char* argv[])
+   {
+
+     if (argc != 3) {
+        cout << "Usage: tsttrpds problem_name ndim\n";
+        exit(1);
+     }
+
+     #ifdef WITH_MPI
+        int me;
+
+        MPI_Init(&argc, &argv);
+        MPI_Comm_rank(MPI_COMM_WORLD, &me);
+     #endif
+     #endif
+\endcode
+</table>
+
+Define the variables.
+
+<table>
+<tr><td>
+\code
+     int ndim;
+     double time0, opt_time;
+
+     USERFCN0 test_problem;
+     INITFCN  init_problem;
+
+     string test_id;
+
+     // Setup the test problem
+     // test_problem is a pointer to the function (fcn) to optimize
+     // init_problem is a pointer to the function that initializes fcn
+     // test_id is a character string identifying the test problem
+
+     test_id = argv[1];
+     ndim    = atoi(argv[2]);
+
+     SetupTestProblem(test_id, &test_problem, &init_problem);
+\endcode
+</table>
+
+Now set up the output file.  If you are running in parallel, you may
+want to designate an output file for each processor.  Otherwise, the
+output from all of the processors will be indiscriminantly intertwined
+in a single file.  If the function evaluation does any file I/O, you
+should set up a working directory for each processor and then have the
+each process chdir (or something comparable) into its corresponding
+directory.  Each working directory should have a copy of the input
+file(s) needed by the function evaluation.  If the function evaluation
+requires file I/O and working directories are not used, the function
+evaluation will not work properly.
+
+<table>
+<tr><td>
+\code
+     char status_file[80];
+     strcpy(status_file,test_id.c_str());
+     #ifdef WITH_MPI
+        sprintf(status_file,"%s.out.%x", status_file, me);
+     #else
+        strcat(status_file,".out");
+     #endif
+\endcode
+</table>
+
+Set up the problem.
+
+<table>
+<tr><td>
+\code
+     //  Build a CompoundConstraint object
+     ColumnVector bound(ndim );
+     bound = -500.0;
+     Constraint bc = new BoundConstraint(ndim,bound);
+
+     //  Create an OptppArray of Constraints 
+     OptppArray<Constraint> arrayOfConstraints;
+     arrayOfConstraints.append(bc);
+
+     //  Create a compound constraint 
+     CompoundConstraint constraints(arrayOfConstraints);  
+    
+     //  Create a constrained Nonlinear problem object 
+     FDNLF1 nlp(ndim,test_problem, init_problem, &constraints);
+
+     nlp.setIsExpensive(true);
+\endcode
+</table>
+
+Set up a TRPDS algorithm object.  TRPDS is a Newton-based method, so
+it is constructed as a Newton object with a search strategy of
+TrustPDS.  Since it is a blend of two algorithms (Newton and PDS),
+algorithmic parameters can both be set even though it is all done
+within the context of the Newton object.
+
+<table>
+<tr><td>
+\code
+    OptConstrQNewton objfcn(&nlp,update_model);   
+    if (!objfcn.setOutputFile(status_file, 0))
+      cerr << "main: output file open failed" << endl;
+    ostream* optout = objfcn.getOutputFile();
+    *optout << "Test problem: " << test_id << endl;
+    *optout << "Dimension   : " << ndim    << endl;
+    objfcn.setSearchStrategy(TrustPDS);
+    objfcn.setSSSS(256);
+\endcode
+</table>
+
+Optimize and clean up.
+
+<table>
+<tr><td>
+\code
+    time0 = get_wall_clock_time();
+    objfcn.optimize();
+    opt_time = get_wall_clock_time() - time0;
+    *optout << "wall clock time =" << e(opt_time,12,4) << endl;
+
+    objfcn.printStatus("Solution from quasi-newton");
+    objfcn.cleanup();
+\endcode
+</table>
+
+Finally, it is necessary to shut down MPI.
+
+<table>
+<tr><td>
+\code
+    #ifdef WITH_MPI
+      MPI_Finalize();
+    #endif
+
+   }
+\endcode
+</table>
+
+<p> <a href="tstgss.html"> Next Section: Generating Set Search Methods </a> |  <a href="index.html"> Back to Main Page </a> </p> 
+
+Last revised <em> September 14, 2006 </em>.
+
+*/

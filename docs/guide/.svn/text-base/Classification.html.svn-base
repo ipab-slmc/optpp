@@ -1,0 +1,13 @@
+/** \page Classification Categories of Solvers
+
+<ul>
+<LI> \ref UnconstrainedProblems
+<LI> \ref BoundConstrainedProblems
+<LI> \ref ConstrainedProblems
+<LI> \ref ParallelOptimization
+</UL>
+
+<p> Previous Section:  \ref GUI_XMLDoc | Next Section:  \ref
+MethodsDoc | Back to the <a href="index.html"> Main Page</a> </p>
+
+*/

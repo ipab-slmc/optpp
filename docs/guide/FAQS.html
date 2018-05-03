@@ -1,0 +1,154 @@
+/** \page FAQS Frequently Asked Questions 
+
+<UL>
+<LI> <a href="#Support">Support</a>
+	<OL>
+	<LI> <a href="#S1"> Do you support the Visual C++ environment? </a> 
+	<LI> <a href="#S2"> Do you support the Macintosh environment? </a> 
+	<LI> <a href="#S3"> Do you accept contributions to the package? </a> 
+	</OL>
+
+<LI> <a href="#General">General</a>
+	<OL> 
+	<LI> <a href="#G1">How do I use OPT++ as an intermediate engine/subroutine? 
+	</a>
+	<LI> <a href="#G2">How do I completely deactivate output tracing?</a>
+	<LI> <a href="#G3">Is the code thread safe?</a>
+        <LI> <a href="#G4"> Are you going to add support for using function objects 
+	instead of functions for objective functions and their derivative arrays?</a>
+	</OL> 
+
+<LI> <a href="#Constraints">Constraints</a>
+	<OL> 
+	<LI> <a href="#C1"> The constraints in my problem are 
+	differential equations. How do I represent them in OPT++? </a>
+	<LI> <a href="#C2"> I have nonlinear constraints in my problem, 
+	which optimizer do you recommend? </a>
+	<LI> <a href="#C3"> I have linear constraints in my problem, 
+	which optimizer do you recommend? </a>
+	</OL>
+
+<LI> <a href="#Parallelism">Parallelism</a>
+	<OL> 
+	<LI> <a href="#P1">How do I solve a problem, in parallel, on a 
+	cluster of workstations?</a>
+	</OL> 
+</UL> 
+
+<hr WIDTH="100%">
+<H3> <a NAME= "Support">Support</a></H3>
+
+<OL>
+<LI><b><a NAME="S1"> Do you support the Visual C++ environment? </a></b><p> 
+ 
+We do not support the Visual C++ environment.  We've had some mixed results
+porting OPT++ to this environment.  If you are able to port to Visual C++
+please send the patches to the development team and we will include it
+in the next OPT++ release.
+<p>
+
+<LI><b><a NAME="S2"> Do you support the Macintosh environment? </a></b><p> 
+A MAC OSX port is available in OPT++2.4.
+<p>
+<LI><b><a NAME="S3"> Do you accept contributions to the package? </a></b><p> 
+Yes. We gladly welcome new algorithmic and functional capabilities to share 
+with our users.  If you port the package to a new platform, please share the 
+configuration files with us for future distribution. 
+<p>
+All correspondence should be directed to the <A
+HREF="mailto:opt++-developers@software.sandia.gov">OPT++ Development
+Team</A>.
+  
+<p>
+
+</OL>
+<hr WIDTH="100%">
+<H3> <a NAME= "General">General</a></H3>
+
+<OL>
+<LI><b><a NAME="G1">How do I use OPT++ as an intermediate engine/subroutine? 
+	</a></b><p>
+In the documentation, there are instructions for setting up a main routine 
+that "drives" OPT++.  The examples in the "Setting up and Solving an 
+Optimization Problem" section will probably be the most helpful.  If you 
+follow these instructions, but make a subroutine that's called by your 
+program (instead of a main routine), that should do the trick.  You may have 
+to initialize the function differently than what's described in the 
+documentation.  And, finally , you will also have to link the OPT++ libraries 
+into your program.
+<p>
+
+<LI><b><a NAME="G2"> How do I completely deactivate output tracing?</a></b><p>
+
+Currently, there is no mechanism to completely deactivate the output tracing.
+In the meantime, double check to be sure that the "setDebug()" method hasn't
+been called in your main routine.  It if has, removing it will notably reduce
+the amount of output tracing.
+<p>
+
+<LI><b><a NAME="G3"> Is the code thread safe?</a></b><p>
+
+There are no guarantees on thread safety, but we intend to address that issue.
+The serial version is probably OK, though there might be some file I/O issues.
+The parallel version is only as thread safe as the MPI implementation that is
+used.
+<p>
+
+<LI><b><a NAME="G4"> Are you going to add support for using function objects 
+instead of functions for objective functions and their derivative arrays?</a></b><p>
+
+This is an interesting enhancement and we would gladly include the feature
+in OPT++ if you or someone else wanted to contribute the code.  It is not
+a high priority for the OPT++ development team, so it is unlikely that we
+would write the code for such a feature in the near future.
+<p>
+</OL>
+
+<hr WIDTH="100%">
+<H3> <a NAME= "Constraints">Constraints</a></H3>
+
+<OL>
+<LI><b><a NAME="C1"> The constraints in my problem are 
+	differential equations. How do I represent them in OPT++? </a></b><p>
+
+You will have to write a subroutine to solve your differential equations.
+<p>
+<LI><b><a NAME="C2"> I have nonlinear constraints in my problem, 
+	which optimizer do you recommend? </a></b><p>
+
+I recommend the NIPS family of optimizers.  If you have analytic first and
+second derivatives, use OptNIPS.  If you have analytic first derivatives, 
+use OptQNIPS.  If you don't have analytic derivatives, use OptFDNIPS.
+<p>
+<LI><b><a NAME="C3"> I have linear constraints in my problem, 
+	which optimizer do you recommend? </a></b><p>
+
+The NIPS family of optimizers are the only ones which can handle linear constraints.
+If you have analytic derivatives and analytic Hessian, use OptNIPS.  If you have
+analytic derivatives, use OptQNIPS.  If you don't have analytic derivatives, use
+OptFDNIPS.
+<p>
+</OL>
+
+<hr WIDTH="100%">
+<H3> <a NAME= "Parallelism">Parallelism</a></H3>
+
+<OL>
+<LI><b><a NAME="P1"> How do I solve a problem, in parallel, on a 
+	cluster of workstations?</a></b><p>
+
+In your main routine, you need to initialize MPI at the beginning and finalize
+MPI at the end.  Also, you want to set up your output filename such
+that it is unique for each process.  (Or, if your function requires file I/0, you
+should set up a unique working directory for each process.) Otherwise, you 
+may not be able to decipher the output, and there could be conflicts between the
+processes when trying to access the file.  Then, use mpirun to execute your program.
+<p>
+</OL>
+
+<p> Previous Section:  \ref MethodsDoc | Next Section:  \ref
+ReferencesDoc | Back to the <a href="index.html"> Main Page</a> </p>
+
+Last revised <em> May 1, 2007</em>
+
+*/

@@ -1,0 +1,62 @@
+/** \page BoundConstraints  Constructing bound-constrained objects 
+
+In OPT++, the standard form for a bound constraint is
+\f[ x \ge  l. \f]
+
+However, the user has the option of creating constraints with upper bounds 
+or constraints with lower and upper bounds. The BoundConstraint class contains
+four constructors.
+
+The first constructor creates a bound constraint in standard form.
+For example,
+\code
+   BoundConstraint(int nc, const ColumnVector& lower);
+\endcode
+where \a nc is the number of constraints, and \a lower is a 
+vector that contains the lower bounds on the constraints.
+
+To define upper bounds on the variables, such as
+\f[ x \le  u, \f] use the following constructor:
+\code
+   BoundConstraint(int nc, const ColumnVector& bound, 
+                   const BoolVector& bdFlag);
+\endcode
+
+Sample code to create \f[ x_i \le i, \forall i=1,2,..,5 \f] appears below. 
+\code
+   bool bdFlag;
+   int numOfCons = 5;
+   ColumnVector bound(numOfCons);
+   bound  << 1.0 << 2.0 << 3.0
+          << 4.0 << 5.0;
+   bdFlag = false;
+   BoundConstraint bc(numOfCons, bound, bdFlag); 
+\endcode
+
+To define lower and upper bounds on the variables,
+use 
+\code
+   BoundConstraint(int nc, const ColumnVector& lower, 
+      		   const ColumnVector& upper)
+\endcode
+which creates 
+\f[l \le x \le u. \f]
+By default, the first ColumnVector contains the lower bounds
+and the second ColumnVector the upper bounds on the constraints.
+<p>
+OPT++ does not support sparse constraints.  Therefore, a bound must be given 
+for each variable even if only a subset of the variables have finite bounds.
+An infinite lower bound is specified by
+\f[l_i \le -1.0e10. \f]
+Similarly, an infinite upper bound is specified by
+\f[u_i \ge  1.0e10. \f]
+</p>
+
+<p> <a href="LinearConstraints.html">Next Section: Constructing linear constraints
+</a> | <a href="index.html">Back to Main Page</a> </p> 
+
+Last revised <em> July 13, 2006</em>
+*/
+
+
+

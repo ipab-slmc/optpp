@@ -1,0 +1,49 @@
+/** \page tstbcqnewton Bound-constrained Quasi-Newton method with line-search
+
+\code
+
+   #include <fstream>
+
+   #include "OptBCQNewton.h"
+   #include "NLF.h"
+   #include "tstfcn.h"
+   #include "Constraint.h"
+   #include "BoundConstraint.h"
+   #include "CompoundConstraint.h"
+   #include "OptppArray.h"
+
+   using NEWMAT::ColumnVector;
+   using namespace OPTPP;
+
+   void update_model(int, int, ColumnVector) {}
+
+   int main ()
+   {
+      int n = 2;
+      ColumnVector lower(n), upper(n);
+     
+      static char *status_file = {"tstbcqnewton.out"};
+
+      lower    = -2.0; upper    =  2.0;
+      Constraint bc = new BoundConstraint(n, lower, upper);
+      CompoundConstraint* cc = new CompoundConstraint(bc);
+
+      //  Create a Nonlinear problem object
+      NLF1 nlp(n,rosen, init_rosen, cc);
+
+      //  Build a Newton object and optimize 
+      OptBCQNewton objfcn(&nlp, update_model);
+
+      objfcn.setOutputFile(status_file, 0);
+      objfcn.setSearchStrategy(LineSearch);
+      objfcn.optimize();
+      objfcn.printStatus("Solution from newton");
+      objfcn.cleanup();      
+   }
+\endcode
+<p> <a href="tstbcnips.html"> Next Section: Finite-difference nonlinear 
+	interior-point method </a> |  <a href="BoundConstrainedProblems.html">
+		        Back to Bound-constrained minimization </a> </p> 
+
+Last revised <em> September 14, 2006 </em>.
+*/

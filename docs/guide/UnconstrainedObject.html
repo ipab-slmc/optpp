@@ -1,0 +1,55 @@
+/** \page UnconstrainedObject  Declaring objective functions
+
+Nonlinear programming problems are classified according to the availability of
+derivative information.  The three categories 
+
+<ul>
+	<li> NLP0 - no available derivative information,
+	<li> NLP1 - analytic first derivatives available, and
+	<li> NLP2 - analytic first and second derivatives available 
+</ul>	
+The NLPX classes are abstract base classes for NLFX.
+
+Listed below are the constructors for the objective function. 
+<ul>
+<li> \code
+typedef void (*USERFCN0)(int, const ColumnVector&, real&, int&);
+\endcode
+In the following code fragment, we show the calling sequence for a 
+trigonometric function of dimension \a n. 
+\code
+   trig(n, x, f, result);
+\endcode
+where \a x is the current point, \a f is the value of 
+	the objective function, and \a result is an output argument.
+
+<li> \code
+typedef void (*USERFCN1)(int, int, const ColumnVector&, real&, 
+                         ColumnVector&, int&);
+\endcode
+
+The function call for the Rosenbrock problem with analytic derivatives is 
+\code
+   rosen(mode, n, x, f, g, result);
+\endcode
+where \a g is the gradient of the objective function.
+
+<li> \code
+typedef void (*USERFCN2)(int, int, const ColumnVector&, real&, 
+                         ColumnVector&, SymmetricMatrix&, int&);
+\endcode
+Similary, the function call for the illumination problem with analytic 
+derivatives and Hessian is 
+\code
+   illum2(mode, n, x, f, g, H, result);
+\endcode
+where \a H is the Hessian of the objective function.
+</ul>
+
+<p> <a href="BoundConstrainedProblems.html">Next Section: Bound-constrained
+ minimization </a> | <a href="UnconstrainedProblems.html">Back to Unconstrained minimization</a></p> 
+
+Last revised <em> June 30, 2006</em>
+
+*/
+

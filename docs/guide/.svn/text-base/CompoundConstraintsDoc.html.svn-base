@@ -1,0 +1,111 @@
+/** \page CompoundConstraintsDoc Constructing a compound constraint 
+
+Solving problems of the form 
+
+<em> minimize </em> \f[ f(x) \f]
+<em> subject to </em> \f[ Ax = b, \f]
+<em>  </em> \f[ g(x) \ge  0, \f]
+<em>  </em> \f[ l \le x \le  u \f]
+requires a means to define a mixed constraint set. 
+To simplify the use of mixed constraint sets in OPT++, we created
+a CompoundConstraint class.  A CompoundConstraint is an array of
+heterogenous constraints.  
+
+The first CompoundConstraint constructor takes as a parameter 
+a single constraint.  For example, 
+\code
+   CompoundConstraint(const Constraint& c1); 
+\endcode
+
+The second constructor 
+\code
+   CompoundConstraint(const Constraint& c1, const Constraint& c2); 
+\endcode
+two constraints as parameters. 
+
+If you have more than two constraints, 
+then you must use either the copy
+constructor 
+\code
+   CompoundConstraint(const CompoundConstraint& cc);
+\endcode
+or pass an OptppArray<Constraint> pointer to the following constructor.  
+For example,
+\code
+   CompoundConstraint(const OptppArray<Constraint>& constraints); 
+\endcode
+
+Now, let's create the following constraint set:
+\f[ x_i \le i,  ~\forall i=1,2,...,5 \f]
+\f[ Ax  \ge i,  \vspace{.2pt} \forall i=1,2,..,5 \f]
+\f[ h_j(x) = j, \vspace{.4pt} \forall j=1,2,3 \f]
+
+In the source file below, we present two ways to construct a
+compound constraint.  We use the second and fourth constructors.
+\code
+   bool bdFlag;
+   int n         = 5;
+   int numOfCons = 5;
+   int ncnln     = 3;
+   ColumnVector bound(numOfCons), b(ncnln);
+
+   //  Initialize the upper bounds
+   bound  << 1.0 << 2.0 << 3.0
+          << 4.0 << 5.0;
+   bdFlag = false;
+   Constraint bc = new BoundConstraint(numOfCons, bound, bdFlag); 
+
+   //  Create a pointer to an NLP object 
+   //  Functions nleqn and init_nleqn are defined elsewhere
+   NLP* nlprob  = new NLP( new NLF1(n, ncnln, nleqn, init_nleqn) );
+
+   //  Initialize the right-hand side of the equations 
+   b << 1.0 << 2.0 << 3.0;
+
+   //  Create a set of nonlinear equations 
+   Constraint nleqns = new NonLinearEquation(nlprob, b, ncnln);
+
+   //  Create a compound constraint which contains 
+   //  ONLY the bound constraints and nonlinear equations
+   CompoundConstraint constraint_set1(bc, nleqns);
+
+   Matrix A(n,n);
+   Real a[] = {11, 12, ........., 55};
+
+   // Store elements of the matrix A
+   A       << a;
+
+   //  Create a set of linear inequalities 
+   Constraint lineqs = new LinearInequality(A, bound); 
+   
+   //   Create an array of constraints
+   OptppArray<Constraint> constraintArray(0);
+   constraintArray.append(bc);
+   constraintArray.append(nleqns);
+   constraintArray.append(lineqs);
+
+   // Create another compound constraint  
+   CompoundConstraint constraint_set2(constraintArray);
+
+\endcode
+
+<p>
+<strong> Note: </strong>
+Inside the constructor, the constraints are sorted so that equality constraints 
+are followed by inequality constraints.  Why?  Optimization algorithms may
+treat inequality constraints different from equality constraints. If
+the constraints are pre-sorted, the optimization algorithm does not have
+to continually query the compound constraint about the constraint 
+type of each constraint.
+</p>
+
+<p> <a href="ParallelOptimization.html">Next Section: Parallel Optimization 
+</a> | <a href="ConstrainedProblems.html"> Back to Constrained minimization
+</a></p>
+
+Last revised <em> June 30, 2006</em>
+
+*/
+
+
+

@@ -1,0 +1,491 @@
+
+/** \page example2 Example 2: Nonlinear Interior-Point Method With General Constraints
+
+This example is intended to demonstrate how to set up and solve a
+problem with general constraints and analytic derivative information.
+In particular, this example is Hock and Schittkowski problem number
+65, i.e.
+
+<em> minimize </em> 
+\f[ (x_1 - x_2)^2 + (1/9)(x_1 + x_2 - 10)^2 + (x_3 - 5)^2 \f]
+<em> subject to </em> \f[ x_1^2 + x_2^2 + x_3^2 \le 48, \f]
+<em> </em>  \f[-4.5 \le x_1 \le 4.5, \f]
+<em> </em>  \f[-4.5 \le x_2 \le 4.5, \f]
+<em> </em>  \f[ -5.0 \le x_3 \le 5.0 \f]
+
+Hock and Schittkowski problem number 65 has bound constraints 
+and nonlinear constraints. In addition, analytic
+gradient and Hessian information is available for both the objective
+function and the nonlinear constraints.  We opted to use a nonlinear
+interior-point method to solve this problem. 
+
+Recall that it is necessary to write C++ code for the main routine
+that sets up the problem and the algorithm and for the subroutines
+that initialize and evaluate the function and the constraints.  We
+step through the specifics below.
+
+<ul>
+  <li> \ref main2 <br>
+  <li> \ref function2 <br>
+  <li> \ref run2 <br>
+</ul>
+
+\section main2 Main Routine
+
+First include the necessary header files.  Start with any C++/C header
+files that are needed.  In this case, none are necessary.  The two
+header files are OPT++ header files.  NLF contains objects, data, and
+methods required for setting up the function/problem.  The next three
+header files contain objects, data, and methods required for the
+constraints.  OptNIPS contains the objects, data, and methods required
+for using the nonlinear interior-point optimization method.  The last four 
+statements correspond to the use of namespaces. The
+<tt> using NEWMAT::ColumnVector</tt> statement imports the data member 
+\a ColumnVector from the matrix library namespace NEWMAT.  The use of namespaces 
+prevents potential conflicts with third party libraries that may also have a data
+members named \a ColumnVector, \a Matrix, and \a SymmetricMatrix. The last 
+statement allows you to access methods and data members in the OPTPP namespace.
+
+<table>
+<tr><td>
+\code
+#include "NLF.h"
+#include "BoundConstraint.h"
+#include "NonLinearInequality.h"
+#include "CompoundConstraint.h"
+#include "OptNIPS.h"
+
+using NEWMAT::ColumnVector;
+using NEWMAT::Matrix;
+using NEWMAT::SymmetricMatrix;
+
+using namespace OPTPP;
+\endcode
+</table>
+
+The first two lines serve as the declarations of the pointers to the
+subroutines that initialize the problem and evaluate the objective
+function, respectively.  The third line is the pointer to the
+subroutine that evaluates the nonlinear constraints.
+
+<table>
+<tr><td>
+\code
+void init_hs65(int ndim, ColumnVector& x);
+void hs65(int mode, int ndim, const ColumnVector& x, double& fx, 
+          ColumnVector& gx, SymmetricMatrix& Hx, int& result);
+void ineq_hs65(int mode, int ndim, const ColumnVector& x,
+	       ColumnVector& cx, Matrix& cgx,
+               OptppArray<SymmetricMatrix>& cHx, int& result);
+\endcode
+</table>
+
+The first thing to do is set up the constraint object.  This is broken
+down into several phases.  First, set the dimension of the problem and
+allocate the space for the upper and lower bounds.  Assign the values
+of the bounds, and create a Constraint object to hold all of the bound
+constraints.
+
+<table>
+<tr><td>
+\code
+int main ()
+{
+  int ndim = 3;
+  ColumnVector lower(ndim), upper(ndim); 
+
+// Here is one way to assign values to a ColumnVector.
+
+  lower << -4.5 << -4.5 << -5.0;
+  upper <<  4.5 <<  4.5 <<  5.0 ;
+
+  Constraint c1 = new BoundConstraint(ndim, lower, upper);
+\endcode
+</table>
+
+Nonlinear constraints are similar in nature to the objective function.
+As such they are created in a similar manner.  Since analytic first
+and second derivatives for the nonlinear constraints are available, an
+NLF2 is constructed.  The calling sequence includes the dimension of
+the problem, the number of nonlinear constraints, the pointer to the
+subroutine that performs the constraint evaluation, and the pointer to
+the subroutine that initializes the problem.  Then a Constraint object
+is created to hold all of the nonlinear constraints.
+
+<table>
+<tr><td>
+\code
+  NLP* chs65 = new NLP(new NLF2(ndim, 1, ineq_hs65, init_hs65));
+  Constraint nleqn = new NonLinearInequality(chs65);
+\endcode
+</table>
+
+Once the constraint sets for each particular type of constraint have
+been created, it is time to roll them all into one object.  That is
+easily accomplished by the following line.
+
+<table>
+<tr><td>
+\code
+  CompoundConstraint* constraints = new CompoundConstraint(nleqn, c1);
+\endcode
+</table>
+
+The next few lines complete the setup of the problem.  Create the
+nonlinear function object using the dimension of the problem, the
+pointers to the subroutines declared above, and the
+CompoundConstraint object.  The NLF2 object is used since analytic
+gradient and Hessian are available.  
+
+<table>
+<tr><td>
+\code
+  NLF2 nips(ndim, hs65, init_hs65, constraints);
+\endcode
+</table>
+  
+Build a nonlinear interior-point algorithm object using the nonlinear
+problem that has just been created.  In addition, set any of the
+algorithmic parameters to desired values.  All parameters have default
+values, so it is not necessary to set them unless you have specific
+values you wish to use.  In this example, we set the name of the
+output file, the function tolerance (used as a stopping criterion),
+the maximum number iterations allowed, and the merit function to be
+used.
+
+<table>
+<tr><td>
+\code
+  OptNIPS objfcn(&nips);
+
+// The "0" in the second argument says to create a new file.  A "1"
+// would signify appending to an existing file.
+
+  objfcn.setOutputFile("example2.out", 0);
+  objfcn.setFcnTol(1.0e-06);
+  objfcn.setMaxIter(150);
+  objfcn.setMeritFcn(ArgaezTapia);
+\endcode
+</table>
+
+Now call the algorithm's optimize method to solve the problem.
+
+<table>
+<tr><td>
+\code
+  objfcn.optimize();
+\endcode
+</table>
+
+Print out some summary information and clean up before exiting.  The
+summary information is handy, but not necessary.  The cleanup flushes
+the I/O buffers.
+
+<table>
+<tr><td>
+\code
+  objfcn.printStatus("Solution from nips");
+  objfcn.cleanup();
+}
+\endcode
+</table>
+
+Now that the main routine is in place, we step through the code
+required for the initialization and evaluation of the function.
+
+\section function2 User-Defined Functions
+
+This section contains examples of the user-defined functions that are
+required.  The first performs the initialization of the problem.  The
+second performs the evaluation of the function.  The last performs the
+evaluation of the nonlinear constraints.
+
+First, include the necessary header files.  In this case, we need the
+OPT++ header file, NLP, for some definitions. We also need to list which
+items we are using from the NEWMAT namespace.  We recommend this approach 
+as opposed <tt>using namespace NEWMAT </tt> to reduce the potential for
+naming conflicts.
+
+<table>
+<tr><td>
+\code
+#include "NLP.h"
+using NEWMAT::ColumnVector;
+using NEWMAT::Matrix;
+using NEWMAT::SymmetricMatrix;
+\endcode
+</table>
+
+The subroutine that initializes the problem should perform any
+one-time tasks that are needed for the problem.  One part of that is
+checking for error conditions in the setup.  In this case, the
+dimension, \a ndim, can only take on a value of 3.  Using "exit"
+is not the ideal way to deal with error conditions, but it serves well
+as an example.
+
+<table>
+<tr><td>
+\code
+void init_hs65(int ndim, ColumnVector& x)
+{
+  if (ndim != 3)
+    exit (1);
+
+  double factor = 0.0;
+\endcode
+</table>
+
+The initialization is also an ideal place to set the initial values of
+the optimization parameters, \a x.  This can be hard coded, as
+done here, or it can be done in some other manner (e.g., reading them
+in from a file, the code for which should appear here).
+
+<table>
+<tr><td>
+\code
+// ColumnVectors are indexed from 1, and they use parentheses around
+// the index.
+
+  x(1) = -5.0  - (factor - 1)*8.6505;
+  x(2) =  5.0  + (factor - 1)*1.3495;
+  x(3) =  0.0  - (factor - 1)*4.6204;
+}
+\endcode
+</table>
+
+The next piece of code is a subroutine that will evaluate the
+function.  In this problem, we are trying to find the minimum value of
+Hock and Schittkowski problem 65, so it is necessary to write the code
+that computes the value of that function given some set of optimization
+parameters.  Mathematically, that function is:
+
+\f[f(x) = (x_1 - x_2)^2 + (1/9)(x_1 + x_2 - 10)^2 + (x_3 - 5)^2 \f]
+
+The following code will compute the value of \a f(x).
+
+First, some error checking and manipulation of the optimization
+parameters, \a x, are done.
+
+<table>
+<tr><td>
+\code
+void hs65(int mode, int ndim, const ColumnVector& x, double& fx, ColumnVector& gx, SymmetricMatrix& Hx, int& result)
+{
+  double f1, f2, f3, x1, x2, x3;
+
+  if (ndim != 3)
+     exit(1);
+
+  x1 = x(1);
+  x2 = x(2);
+  x3 = x(3);
+  f1 = x1 - x2;
+  f2 = x1 + x2 - 10.0;
+  f3 = x3 - 5.0;
+\endcode
+</table>
+
+If a function evaluation is requested, then the function value,
+\a fx, is computed, and the \a result variable is set to
+indicate that a function evaluation has been done.
+  
+<table>
+<tr><td>
+\code
+  if (mode & NLPFunction) {
+    fx  = f1*f1+ (f2*f2)/9.0 +f3*f3;
+    result = NLPFunction;
+  }
+\endcode
+</table>
+
+If a gradient evaluation is requested, then the gradient, \a gx,
+is computed, and the \a result variable is set to indicate that
+a gradient evaluation has been done.
+
+<table>
+<tr><td>
+\code
+  if (mode & NLPGradient) {
+    gx(1) =  2*f1 + (2.0/9.0)*f2;
+    gx(2) = -2*f1 + (2.0/9.0)*f2;
+    gx(3) =  2*f3;
+    result = NLPGradient;
+  }
+\endcode
+</table>
+
+If a Hessian evaluation is requested, then the Hessian, \a Hx,
+is computed, and the \a result variable is set to indicate that
+a Hessian evaluation has been done.
+
+<table>
+<tr><td>
+\code
+// The various Matrix objects have two indices, are indexed from 1,
+// and they use parentheses around // the index.
+
+  if (mode & NLPHessian) {
+    Hx(1,1) =  2 + (2.0/9.0);
+
+    Hx(2,1) = -2 + (2.0/9.0);
+    Hx(2,2) =  2 + (2.0/9.0);
+
+    Hx(3,1) = 0.0;
+    Hx(3,2) =  0.0;
+    Hx(3,3) =  2.0;
+    result = NLPHessian;
+  }
+}
+\endcode
+</table>
+
+In a similar manner, the function, gradient, and Hessian values for
+the nonlinear constraints must be computed.  For this problem, the
+nonlinear constraint is the following:
+
+\f[c(x) = 48 - x_1^2 - x_2^2 - x_3^2 \f]
+
+The code for computing the function, gradient, and Hessian for this
+constraint appears below.  The step-by-step breakdown is almost
+exactly the same as it is for the function evaluation, so we do not go
+through it here.
+
+<table>
+<tr><td>
+\code
+void ineq_hs65(int mode, int ndim, const ColumnVector& x, ColumnVector& cx, Matrix& cgx, OptppArray<SymmetricMatrix>& cHx, int& result)
+{ // Hock and Schittkowski's Problem 65 
+  double f1, f2, f3, x1, x2, x3;
+  SymmetricMatrix Htmp(ndim);
+
+  if (ndim != 3)
+     exit(1);
+
+  x1 = x(1);
+  x2 = x(2);
+  x3 = x(3);
+  f1 = x1;
+  f2 = x2;
+  f3 = x3;
+
+  if (mode & NLPFunction) {
+    cx(1)  = 48 - f1*f1 - f2*f2 - f3*f3;
+    result = NLPFunction;
+  }
+  if (mode & NLPGradient) {
+    cgx(1,1) = -2*x1;
+    cgx(2,1) = -2*x2;
+    cgx(3,1) = -2*x3;
+    result = NLPGradient;
+  }
+  if (mode & NLPHessian) {
+    Htmp(1,1) = -2;
+    Htmp(1,2) = 0.0;
+    Htmp(1,3) = 0.0;
+    Htmp(2,1) = 0.0;
+    Htmp(2,2) = -2;
+    Htmp(2,3) = 0.0;
+    Htmp(3,1) = 0.0;
+    Htmp(3,2) = 0.0;
+    Htmp(3,3) = -2;
+
+    cHx[0] = Htmp;
+    result = NLPHessian;
+  }
+}
+\endcode
+</table>
+
+On a more general note, these subroutines could serve as wrappers to C
+or Fortran subroutines.  Similarly, it could make a system call to a
+completely independent executable.  As long as the values of
+<em>fx</em> and <em>result</em> are set when all is said and done, it
+does not matter how the function value is computed.
+
+Now that we have all of the code necessary to set up and solve this
+Hock and Schittkowski function, give it a try!
+
+\section run2 Building and Running the Example
+
+If you want to try running this example, the following steps should do
+the trick.
+
+<ol>
+      <li> Determine which defines you need.  If the C++ compiler you
+	   are using supports the ANSI standard style of C header
+	   files, you will need
+           \verbatim
+		-DHAVE_STD
+           \endverbatim
+	   If the C++ compiler you are using supports namespaces, you
+	   will need
+           \verbatim
+		-DHAVE_NAMESPACES
+           \endverbatim
+	   If you are using the parallel version of OPT++, you will
+	   need
+           \verbatim
+		-DWITH_MPI
+           \endverbatim
+      <li> Determine the location of the header files.  If you did a
+	   "make install", they will be located in the "include"
+	   subdirectory of the directory in which OPT++ is installed.
+	   If that directory is not one your compiler normally checks,
+	   you will need
+           \verbatim
+		-IOPT++_install_directory/include
+           \endverbatim
+	   If you did not do a "make install", the header files will
+	   almost certainly be in a directory not checked by your
+	   compiler.  Thus, you will need
+           \verbatim
+		-IOPT++_top_directory/include -IOPT++_top_directory/newmat11
+           \endverbatim
+	<li> Determine the location of the libraries.  If you did a
+	   "make install", they will be located in the "lib"
+	   subdirectory of the directory in which OPT++ is installed.
+	   If that directory is not one your compiler normally checks,
+	   you will need
+           \verbatim
+		-LOPT++_install_directory/lib
+           \endverbatim
+	   If you did not do a "make install", the libraries will
+	   almost certainly be in a directory not checked by your
+	   compiler.  Thus, you will need
+           \verbatim
+		-LOPT++_top_directory/lib/.libs
+           \endverbatim
+	<li> If you configured OPT++ for the default behavior of using
+	   the BLAS and/or you configure OPT++ to use NPSOL, you will
+	   need the appropriate Fortran libraries for linking.  The
+	   easiest way to get these is to look in the Makefile for the
+	   value of FLIBS.
+	<li> If all is right in the world, the following format for your
+	   compilation command should work:
+           \verbatim
+		$CXX <defines> <includes> example2.C tstfcn.C <lib \
+		directory> -lopt -lnewmat -l$BLAS_LIB $FLIBS 
+           \endverbatim
+	   $CXX is the C++ compiler you are using.  <defines> and
+	   <includes> are the flags determined in steps 1-2.  example2.C
+	   is your main routine, and tstfcn.C contains your function
+	   evaluations.  (Note: If you have put them both in one file,
+	   you need only list that single file here.)  <lib_directory
+	   was determined in step 3.  -lopt and -lnewmat are the two
+	   OPT++ libraries.  $BLAS_LIB is the BLAS library you are
+	   using, and $FLIBS is the list of Fortran libraries
+	   determined in step 4.
+</ol>
+
+You should now be able to run the executable (type "./example2").  You
+can compare the results, found in example2.out, to <a
+href="example2_out.html">our results</a>.  There may be slight
+differences due to operating system, compiler, etc., but the results
+should very nearly match.
+
+<p> Previous Example:  \ref example1 | Back to \ref SetUp </p>
+
+Last revised <em> April 27, 2007 </em>.
+
+*/

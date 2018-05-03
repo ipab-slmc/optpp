@@ -1,0 +1,92 @@
+/** \page LinearConstraints Constructing linear constraints 
+
+In this section, you will learn about 
+<ul>
+	<li> \ref Matrix,
+	<li> \ref LinearEquations, and
+	<li> \ref LinearInequalities.
+</ul>
+The two essential components of linear constraints, are the 
+definitions of the constraints and the right-hand side.
+Each row in a matrix denotes the coefficients of a linear
+constraint.  If the \a jth variable does not appear in the
+\a ith constraint, the corresponding element of A, A<sub>ij</sub> 
+is set to zero. 
+
+In the next section, we provide a brief tutorial on matrix initialization.
+
+\section Matrix Initializing a Matrix in OPT++
+
+Storing elements in a matrix is a simple task which can be accomplished in
+various ways.  You can load the elements of a matrix from an array:
+\code
+   Matrix A(10,12);
+   Real a[] = {11,12,....,61,62,63,.....,101,102,...,1012}; 
+   A << a;
+\endcode
+
+Or, for small matrices you can enter the values as follows.
+\code
+    Matrix A(3,2);
+    A << 11 << 12
+      << 21 << 22
+      << 31 << 32;
+\endcode
+<strong>Note:</strong> Matrices are stored by row.
+
+Now, we show the necessary steps for creation of linear equations 
+and inequalities.
+\section LinearEquations Creating Linear Equations 
+As customary, linear equations are written as \f[ Ax =  b. \f]
+
+The LinearEquation constructor 
+\code
+   LinearEquation(const Matrix& A, const ColumnVector& rhs);
+\endcode
+requires two parameters, a Matrix, which consists of the constraints, and
+a ColumnVector that contains the elements of the right-hand side.
+
+
+\section LinearInequalities Creating Linear Inequalities
+In OPT++, the standard form for a linear inequality is
+\f[ Ax \ge  b. \f] 
+
+The corresponding constructor is 
+\code
+   LinearInequality(const Matrix& A, const ColumnVector& rhs);
+\endcode
+
+To define upper bounds on the constraints, such as
+\f[ Ax \le  b, \f] use the following constructor:
+\code
+   LinearInequality(const Matrix& A, const ColumnVector& rhs, 
+	            const bool rowFlag);
+\endcode
+
+To create lower and upper bounds on the constraints,
+use 
+\code
+   LinearInequality(const Matrix& A, const ColumnVector& lower, 
+                    const ColumnVector& upper);
+\endcode
+which generates 
+\f[l \le Ax \le  u. \f]
+
+<p>
+OPT++ does not support sparse constraints.  Therefore, a bound must be given 
+for each constraint even if only a subset of the constraint have finite bounds.
+An infinite lower bound is specified by
+\f[l_i \le -1.0e10. \f]
+Similarly, an infinite upper bound is specified by
+\f[u_i \ge  1.0e10. \f]
+</p>
+
+<p> <a href="NonLinearConstraints.html">Next Section: Constructing nonlinear constraints
+</a> | <a href="index.html">Back to Main Page</a> </p> 
+
+Last revised <em> July 13, 2006</em>
+
+*/
+
+
+

@@ -1,0 +1,101 @@
+
+/** \page AlternativeFunctions Alternate Forms of Nonlinear Objects 
+
+\section problem Problem Setup
+There are alternate forms of the function that accept a <em>vptr</em> as the final 
+argument.  A <em> vptr</em> is a void pointer that the user can use for any desired 
+purpose, such as application reentry. The most common constructors are shown below.
+
+<ul>
+  <li> NLF0(ndim, fcn, init_fcn, constraint, <b>vptr</b>): problem has no analytic
+  derivative information available
+  <BR>
+  <li> NLF1(ndim, fcn, init_fcn, constraint, <b>vptr</b>): problem has analytic
+  first derivatives available, but no analytic second derivatives
+  <BR>
+  <li> NLF2(ndim, fcn, init_fcn, constraint,<b>vptr</b>):  problem has analytic first and
+       second derivatives available
+  <BR>
+  <li> FDNLF1(ndim, fcn, init_fcn, constraint, <b>vptr</b>): problem has no
+  analytic derivative information available, but finite differences
+  are used to approximate first derivatives
+  <BR>
+  <li> LSQNLF(ndim, lsqterms, lsqfcn, init_fcn, constraint,<b>vptr</b>): problem has a
+  least squares operator, Gauss-Newton is used to approximate Jacobian
+  and Hessian
+</ul>
+
+For completeness, we describe the other arguments to the constructor.
+The arguments to the constructors must be defined before instantiating
+the function object. The following description holds for the first four 
+nonlinear function objects, which have identical argument lists. We will
+define the argument list for the LSQNLF later.
+
+The first argument, <em>ndim</em>, is an integer
+specifying the dimension of the problem.  The second argument,
+<em>fcn</em>, is a pointer to the subroutine that evaluates the
+function.  The form of this pointer/subroutine is described in more
+detail in the <a href="#functions"> User-Defined Functions</a>
+subsection.  The third argument, <em>init_fcn</em>, is a pointer to
+the subroutine that initializes the function.  Again, the form of this
+pointer/subroutine is described in the <a href="#functions">
+User-Defined Functions</a> subsection.  The fourth argument,
+<em>constraint</em>, is a pointer to a constraint object.  If the
+optimization problem of interest has no constraints, this argument can
+be excluded.  Otherwise, it can be constructed as described in the
+<a href="SetUp#constraints"> %Constraint Setup</a> subsection. 
+
+For the LSQNLF object, the first argument, <em>ndim</em>, is an integer
+specifying the dimension of the problem.  The second argument, 
+<em>lsqterms</em>, is an integer specifying the number of least square terms
+in the function. The third argument,
+<em>lsqfcn</em>, is a pointer to the subroutine that evaluates the least squares
+operator.  The form of this pointer/subroutine is described in more
+detail in the <a href="#functions"> User-Defined Functions</a>
+subsection.  The remaining arguments have the same meaning as previously
+defined. 
+
+<a name="functions"><em> User-Defined Functions </em></a>
+
+In addition to the main routine, the user must provide additional C++
+code that performs the initialization of the problem, the evaluation
+of the objective function, and the evaluation of any nonlinear
+constraints.  This code must also include the computation of any
+analytic derivative information that is to be provided.  These
+subroutines may appear in the same file as the main routine or in a
+separate file, and they must satisfy the interfaces listed below.
+
+The function interfaces are the following:
+
+<ul>
+      <li> void (*USERFCN0V)(ndim, x, fx, result, vptr):  for NLF0 and FDNLF1
+      <li> void (*USERFCN1V)(mode, ndim, x, fx, gx, result, vptr):  for NLF1
+      <li> void (*USERFCN2V)(mode, ndim, x, fx, gx, Hx, result, vptr):  for NFL2
+      <li> void (*USERFCNLSQ0V)(ndim, x, lsfx, result, vptr):  for LSQNLF or
+      <li> void (*USERFCNLSQ1V)(mode, ndim, x, lsfx, lsgx, result, vptr):  for LSQNLF
+</ul>
+
+The arguments of these functions are fairly straightforward.
+<em>ndim</em> is an integer that specifies the dimension of the
+problem, <em>x</em> is a ColumnVector that contains the values of the
+optimization variables, <em>fx</em> is the value of the objective
+function at <em>x</em>, <em>gx</em> is a ColumnVector containing the
+gradient of the objective function at <em>x</em>, <em>Hx</em> is a
+SymmetricMatrix containing the Hessian of the objective function at
+<em>x</em>, <em>mode</em> is an integer encoding of the type of
+evaluation requested (i.e., function, gradient, Hessian), 
+<em>result</em> is an integer encoding of the type of evaluations
+available and <em>vptr</em> is a void pointer which contains user-specified
+information.  For the least squares operator, <em>lsfx</em> is a ColumnVector
+with each entry containing the value of one of the least squares terms and 
+<em>lsgx</em> is a Matrix containing the Jacobian of the least squares 
+operator at <em>x</em>.
+The ColumnVector, Matrix, and SymmetricMatrix objects are described
+in the <a href="http://robertnz.net/nm11.htm"> NEWMAT documentation</a>.  
+
+<p> Previous Section:  \ref SetUp | Next Section:  \ref GUI_XMLDoc
+| Back to the <a href="index.html"> Main Page</a> </p>
+
+Last revised <em> April 18, 2007</em>
+
+*/

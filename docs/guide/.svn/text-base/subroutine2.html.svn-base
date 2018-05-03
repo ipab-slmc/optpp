@@ -1,0 +1,245 @@
+
+/** \page subroutine2 Subroutine Example 2:  Hock-Schittkowski Problem Number 14
+This example is intended to demonstrate how to set up and solve a
+constrained problem using the subroutine interface.  In particulare,
+we will show you how to solve Hock-Schittkowski Problem Number 14,
+which is a two-dimensional problem with one linear and one nonlinear
+constraint.
+
+<em> minimize </em> 
+\f[ (x_1 - 2.0)^2 + (x_2 - 1.0)^2 \f]
+<em> subject to </em> \f[ x_1 - 2.0 x_2 = -1.0, \f]
+<em> </em> \f[ 0.25 x_1^2 - x_2^2 + 1.0 \ge 0.0, \f]
+
+For this example, we will assume that that analytic first derivatives
+are available (but not second derivatives).  We will also assume that
+the subroutines that initialize, evaluate the function, and evaluate
+the nonlinear constraint are in the same file.  We step through the
+specifics below.
+
+<ul>
+  <li> \ref usercode <br>
+  <li> \ref buildandrun <br>
+</ul>
+
+\section usercode User-Provided Subroutines
+
+This section contains examples of the user-defined functions that are
+required.  The first performs the initialization of the problem.  The
+second performs the evaluation of the function.
+
+First, include the necessary header files.  In this case, we need
+iostream so we can print error messages and the OPT++ header file,
+NLP.h, for some definitions.  Also, because we are going to great a
+dynamically loadable library, we need to surround all of our code by
+an extern "C" statement.
+
+<table>
+<tr><td>
+\code
+#include <iostream>
+#include "NLP.h"
+
+extern "C" {
+\endcode
+</table>
+
+The subroutine that initializes the problem should perform any
+one-time tasks that are needed for the problem.  One part of that is
+checking for error conditions in the setup.  In this case, the
+dimension, <em>ndim</em>, can only take on a value of 2.  Using "exit"
+is not the ideal way to deal with error conditions, but it serves well
+as an example.  In addition to checking the error condition, we also
+do some manipulation of the initial values.
+
+<table>
+<tr><td>
+\code
+void init_hs14(int ndim, ColumnVector& x)
+{
+  if (ndim != 2) {
+    cerr << "Number of variables for Hock Problem 14 should be 2."
+	 << "  The number of variables given is " << ndim << endl;
+    exit (1);
+  } //end if
+
+  x(1) = 2+(x(1) -1)* 1.1771243447;
+  x(2) = 2+(x(2) -1)* 1.0885621722;
+} //end init_hs14
+\endcode
+</table>
+
+The second required subroutine will evaluate the function.  In this
+problem, we are trying to find the minimum value of Hock-Schittkowski
+Problem 14, so it is necessary to write the code that computes the
+value of that function given some set of optimization parameters.  In
+addition, since we are assuming that first derivatives are available,
+we must also provide the code to compute the gradient.
+Mathematically, the function is given by:
+
+\f[ (x_1 - 2.0)^2 + (x_2 - 1.0)^2 \f]
+
+The following code will compute the value of <em>f(x)</em>.
+
+First, some manipulation of the optimization parameters, <em>x</em>,
+is done.
+
+<table>
+<tr><td>
+\code
+void hs14(int mode, int n, const ColumnVector& x, double& fx,
+          ColumnVector& g, int& result)
+{
+  double f1, f2, x1, x2;
+
+  x1 = x(1);
+  x2 = x(2);
+  f1 = x1 - 2.0;
+  f2 = x2 - 1.0;
+\endcode
+</table>
+
+Then the function or gradient is computed.  Notice how the
+<em>mode</em> and <em>result</em> variables are used to
+determine/report the type of evaluation done.
+  
+<table>
+<tr><td>
+\code
+  if (mode & NLPFunction) {
+    fx  = f1*f1 + f2*f2;
+    result = NLPFunction;
+  } //end f(x)
+  if (mode & NLPGradient) {
+    g(1) = 2*(x1 - 2.0);
+    g(2) = 2*(x2 - 1.0);
+    result = NLPGradient;
+  } //end g(x)
+} //end hs14
+\endcode
+</table>
+
+In addition to the function, we must also provide the code to evaluate
+the nonlinear constraint.  We will also include code for the first
+derivative of the constraint, and we will put this code in the same
+library as the function evaluation.  The code looks very similar to
+that for the function, except now the expression is the following:
+
+\f[ 0.25 x_1^2 - x_2^2 + 1.0 \ge 0.0, \f]
+
+Also, notice the differences in the argument list.  This is due to the
+fact that there could be multiple constraints computed in this
+function.  In the current GUI/XML set-up, however, we are restricted
+to only one constraint per function.  This will change in future
+releases.
+
+First, some manipulation of the optimization parameters, <em>x</em>,
+is done.
+
+<table>
+<tr><td>
+\code
+void ineq_hs14(int mode, int n, const ColumnVector& x, ColumnVector& fx,
+          Matrix& g, int& result)
+{
+  double f1, f2, x1, x2;
+
+  x1 = x(1);
+  x2 = x(2);
+  f1 = x1*x1;
+  f2 = x2*x2;
+\endcode
+</table>
+
+Then the function or gradient is computed.  Notice how the
+<em>mode</em> and <em>result</em> variables are used to
+determine/report the type of evaluation done.
+  
+<table>
+<tr><td>
+\code
+
+  if (mode & NLPFunction) {
+    fx  = -.25*f1 - f2 + 1.0;
+    result = NLPFunction;
+  } //end f(x)
+  if (mode & NLPGradient) {
+    g(1,1) = -0.5*x1;
+    g(2,1) = -2.0*x2;
+    result = NLPGradient;
+  } //end g(x)
+} //end ineq_hs14
+} //end extern "C"
+\endcode
+</table>
+
+Now that we have all of the code necessary to initialize and evaluate
+Hock-Schittkowski Problem 14, give it a try!
+
+\section buildandrun Building and Running the Example
+
+If you want to try running this example, the following steps should do
+the trick.
+
+<ol>
+  <li> cd into your favorite directory.
+  <li> Write the code described above.  You can organize it however
+  you like, but we recommend putting both subroutines in the same
+  file (e.g., testexample.C).
+  <li> Copy the Makefile from the tests/xml directory into the
+  directory where your code resides.  (WARNING: Since the Makefile
+  contains platform-dependent information, it should be one that was
+  configured for the platform on which you are doing this example.)
+  <li> Edit the Makefile by replacing the files listed in the existing
+  SOURCES line with your file.  For example,
+        \verbatim
+           SOURCES = testexample.C
+        \endverbatim
+  <li> Type "make".  This step will create the library,
+	testexample.so.
+  <li> Set the LD_LIBRARY_PATH environment variable to the directory
+	where your library resides.  For us, the directory was
+	/home/pdhough/TooMuchFun, so:
+
+	\verbatim
+	   for csh or tcsh, <br>
+	   setenv LD_LIBRARY_PATH /home/pdhough/TooMuchFun
+	\endverbatim
+	OR
+	\verbatim
+	   for bash, <br>
+	   set LD_LIBRARY_PATH=/home/pdhough/TooMuchFun
+	   export LD_LIBRARY_PATH
+	\endverbatim
+  <li> Create the XML input file for OPT++.  The initialization
+	subroutine is init_hs14, the function subroutine is hs14, and
+	the library is testexample.so.  The number or variables is 2,
+	and there are first derivatives but not second.  If you want
+	to duplicate our results, we used an initial guess of 0.0 for
+	the first variable and 0.0 for the second.  There is one
+	linear constraint for which you will need to enter the
+	variables, coefficients, and right-hand side.  There is one
+	nonlinear constraint with a subroutine interface and first
+	derivatives available.  We used the NIPS algorithm with the
+	default values for all of the parameters.  We recommend
+	putting the XML file in the same directory as your code so
+	that you have all of your problem information in one place.
+  <li> If you have set up OPT++ and the various environment variables
+	as described in the documentations, you should now be able to
+	run the problem by issuing the following command:
+
+        \verbatim
+           ./testexample
+        \endverbatim
+
+	If you like, you can compare your output to
+	<a href="subroutine2_out.html"> our results</a>.  There may be
+	slight differences, but if you used the same input that we
+	did, the results should look pretty much the same.
+</ol>
+
+<p> Previous Example: \ref subroutine1 | Back to \ref GUI_XMLDoc </p>
+
+Last revised <em> July 25, 2006</em>
+
+*/

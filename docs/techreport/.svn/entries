@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="2"
+   name=""
+   committed-date="2001-09-25T15:11:43.000000Z"
+   url="https://software.sandia.gov:/svn/public/optpp/optpp/trunk/docs/techreport"
+   last-author="pdhough"
+   kind="dir"
+   uuid="769e035e-e624-0410-925d-addec6342ffc"
+   revision="635"/>
+<entry
+   committed-rev="2"
+   name="opt++.ps"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2001-09-25T15:11:43.000000Z"
+   checksum="eeeb33c55fd8f3d9b133e3a3d312cec6"
+   last-author="pdhough"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+</wc-entries>

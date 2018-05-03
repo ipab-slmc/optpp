@@ -1,0 +1,87 @@
+/** \page subroutine2_out
+
+<pre>
+**********************************************************
+OPT++ version 2
+Job run at Thu Apr 10 09:36:12 2003
+
+**********************************************************
+
+		 NIPS Iteration Summary
+
+	Nonlinear Interior-Point Method Method with Line Search 
+ 
+  Merit Function =  1 
+
+  Iter    F(x)       mu          alpha      Merit    feval    btracks  Penalty
+
+    0   1.3935e+00   2.3609e-01 
+    1   1.6487e+00   2.3609e-01  1.0000e+00   5.9613e+01    2   0   1.00e+02
+    2   1.4267e+00   2.3609e-03  1.0000e+00   6.1656e+00    3   0   1.00e+02
+    3   1.3961e+00   2.3609e-03  1.0000e+00   3.0604e+00    4   0   1.00e+02
+    4   1.3935e+00   2.3609e-05  1.0000e+00   1.4210e+00    5   0   1.00e+02
+    5   1.3935e+00   2.3609e-07  1.0000e+00   1.3938e+00    6   0   1.00e+02
+    6   1.3935e+00   2.3609e-09  1.0000e+00   1.3935e+00    7   0   1.00e+02
+L2 norm =   1.6694e-09  ftol =   1.4900e-08
+
+
+=========  Solution   ===========
+
+Optimization method       = Nonlinear Interior-Point Method
+Dimension of the problem  = 2
+No. equalities            = 1
+No. inequalities          = 1
+Merit Function (0= NormFmu, 1 = Argaez, 2 = Vanderbei) = 1
+Return code               = 2 (OptNIPSLike: Algorithm converged)
+No. iterations taken      = 6
+No. function evaluations  = 7
+No. gradient evaluations  = 21
+No. backtracks in lnsrch  = 0
+
+
+=========  Solution   ===========
+
+
+    i	    xc 		 grad  		 fcn_accrcy 
+     1  8.2288e-01	 -2.3542e+00	  2.2204e-16
+     2  9.1144e-01	 -1.7712e-01	  2.2204e-16
+Function Value     =   1.3935e+00
+Norm of gradient   =   2.3609e+00
+
+
+==============================================
+
+
+
+=========  Solution   ===========
+
+
+    i	   y    
+
+    1 -1.5945e+00
+
+
+=====================================
+
+
+    i	    z 	      s
+
+    1  1.8466e+00  1.2785e-09
+
+
+==========  Tolerances  ===========
+
+Machine Epsilon      = 2.22045e-16
+Maximum Step         = 1000
+Minimum Step         = 1.49e-08
+Maximum Iter         = 100
+Maximum Backtracks   = 5
+Maximum Fcn Eval     = 10000
+Step Tolerance       = 1.49e-08
+Function Tolerance   = 1.49e-08
+Constraint Tolerance = 1.49e-08
+Gradient Tolerance   = 6.05e-06
+LineSearch Tolerance = 0.0001
+</pre>
+
+*/

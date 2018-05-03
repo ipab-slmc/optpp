@@ -1,0 +1,146 @@
+/** \page ControlParameters  Algorithmic Parameters
+
+Below, we describe the common parameters for our optimization algorithms and 
+list their default values.  For information about additional parameters
+for a specific algorithm,  please review the documentation for that algorithm.
+
+<UL>
+<LI> <a href="#Tolerances">Stopping Tolerances</a>
+<p>
+ <UL>
+<LI><b>setFTol</b><p>
+The setFTol method assigns a stopping tolerance for an optimization algorithm.
+Please assign tolerances that make sense given the accuracy of your function.
+For example, including the following code fragment, 
+\code
+objfcn.setFTol(1.e-4)
+\endcode
+in your problem means the optimization algorithm converges when 
+the function value from one iteration to the next changes by 1.e-4 or less. 
+<p>
+Default value: 1.49012e-8
+<p> 
+<LI><b>setGradTol</b><p>
+The setGradTol method assigns a stopping tolerance for an optimization 
+algorithm.
+Please assign tolerances that make sense given your function accuracy.
+For example, including the following code fragment, 
+\code
+objfcn.setGradTol(1.e-6)
+\endcode
+in your problem means the optimization algorithm converges when 
+the absolute or relative norm of the gradient is 1.e-6 or less. 
+<p>
+Default value: 6.05545e-6
+<p>
+<LI><b>setStepTol</b><p>
+The setStepTol method assigns a stopping tolerance for the optimization 
+algorithm.
+Please set tolerances that make sense, given the accuracy of your function. 
+For example, including the following code fragment, 
+\code
+objfcn.setStepTol(1.e-2)
+\endcode
+in your problem means the optimization algorithm converges when the relative
+steplength is 1.e-2 or less.
+<p>
+Default value: 1.49012e-8
+<p>
+<LI><b>setMaxIter</b><p>
+The setMaxIter method places a limit on the number of iterations of the
+optimization algorithm.  The method is useful when your function is 
+computationally expensive or you are debugging the optimization algorithm. 
+<p>
+\code
+objfcn.setMaxIter(50)
+\endcode
+<p>
+In the example above, when 50 iterations evaluations have been completed, 
+the optimization algorithm will stop and report the solution it has reached at 
+that point. It may not be the optimal solution, but it will be 
+the best it could provide given the limit on the number of iterations.
+<p>
+Default value: 100
+<p>
+<LI> <b> setMaxFeval</b><p>
+The setMaxFeval method places an upper bound on the number of function evaluations.  
+The method is useful when your function is computationally expensive and you only 
+have time to perform a limited number of evaluations.  
+<p>
+\code
+objfcn.setMaxFeval(200)
+\endcode
+<p>
+In the example above, when 200 function evaluations have been completed, 
+the optimization algorithm will stop and report the solution it has reached at 
+that point. It may not be the optimal solution, but it will be 
+the best it could provide given the limit on the number of function evaluations.
+<p>
+Default value: 1000
+ </UL>
+<p> 
+<LI> <a href="#Steplength">Steplength Control</a>
+<p>
+<UL>
+<LI><b>setMaxStep</b><p>
+The setMaxStep method places an upper bound on the length of the
+step that can be taken at each iteration of the optimization algorithm.
+If the scale of your optimization parameters exceeds the bound, adjust
+accordingly.  If you want to be conservative in your search, you may
+want to set MaxStep to a smaller value than the default.  In our experience,
+the default value is generally fine.
+<p> 
+Default value: 1.0e3
+<p> 
+<LI><b>setMinStep</b><p>
+The setMinStep method places a lower bound on the length of the
+step that can be taken at each iteration of the optimization algorithm.
+If the scale of your optimization parameters exceeds the bound, adjust
+accordingly.  If you expect the optimization algorithm to navigate some
+tricky areas, set MinStep to a smaller value than the default. In our experience,
+the default value is generally fine.
+<p> 
+Default value: 1.49012e-8
+<p> 
+</UL>
+<LI> <a href="#Globalization">Globalization Strategy Parameters</a>
+<p>
+<UL>
+<LI><b>setLSTol</b><p>
+In practice, the linesearch tolerance is set to a small value, so that almost
+any decrease in the function value results in an acceptable step.  Suggested 
+values are 1.e-4 for Newton methods and 1.e-1 for more exact line searches.
+<p>
+Default value: 1.e-4
+<p>
+<LI><b>setMaxBacktrackIter</b><p>
+The setMaxBacktrackIter method is only relevant when you use a algorithm
+with a linesearch search strategy.  The value places a limit on the number of 
+iterations in the linesearch routine of the optimization algorithm.  
+If the limit is reached before computing a step with acceptable decrease,
+the algorithm terminates with an error message.  The reported solution
+is not optimal, but the best one given the number of linesearch iterations. 
+Increasing the number of linesearch iterations may lead to an acceptable step,
+but it also results in more function evaluations and a shorter steplength.
+The formula for computing the steplength is
+\f[ \alpha = \hat{\alpha}^L, \mbox{where}~ 
+\hat{\alpha} = \frac{1}{2}  \mbox{and}~ 
+L \mbox{ is the number of backtrack iterations.} \f] 
+<p>
+Default value: L = 5 
+<p>
+<LI><b>setTRSize</b><p>
+The setTRSize method is only relevant when you are using an algorithm
+with a trust-region or a trustpds search strategy.  The value
+initializes the size of the trust region.  
+<p>
+Default value:  \f$ 0.1* \| \nabla f(x) \| \f$
+<p>
+If your problem is quadratic or close to it, you may want to initialize the
+size of the trust region to a larger value.
+<p>
+</UL>
+</UL>
+Last revised <em> June 30, 2006</em>
+
+*/

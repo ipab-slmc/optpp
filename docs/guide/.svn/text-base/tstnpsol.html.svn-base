@@ -1,0 +1,79 @@
+/** \page tstnpsol NPSOL wrapper 
+ 
+For completeness, we present a test program for the NPSOL method.
+Unlike the previous optimization methods we have highlighted,
+the calling sequence for OptNPSOL requires the number of linear and nonlinear
+constraints in the problem formulation. Also note that the lower and upper 
+bound vectors have dimension <em> n + nclin + ncnln </em>.
+<hr />
+
+\code
+   #ifdef HAVE_CONFIG_H
+   #include "OPT++_config.h"
+   #endif
+
+   #include <iostream>
+   #include <fstream>
+   #ifdef HAVE_STD
+   #include <cstdio>
+   #include <cstring>
+   #else
+   #include <stdio.h>
+   #include <string.h>
+   #endif
+
+   #include "OptNPSOL.h"
+   #include "tstfcn.h"     
+
+   using NEWMAT::ColumnVector;
+  
+   using namespace OPTPP;
+
+   double const LOW_BOUND =  -4.5;
+   double const UP_BOUND  =   4.5;
+
+   int main ()
+   {
+     int          i, n=3;
+     ColumnVector x(n);
+  
+     char *status_file = {"tstnpsol.out"};
+     ofstream opt_fp;
+     opt_fp.open(status_file);
+
+     int ndim  = n;          // Problem dimension
+     int nclin = 0;          // Number of linear constraints 
+     int ncnln = 1;          // Number of nonlinear constraints 
+     double ftol = 1.0e-06;  // Function accuracy
+
+     ColumnVector lower(n+nclin+ncnln), upper(n+nclin+ncnln);
+
+     //  Create boundary constraints 
+     for(i=1; i< ndim; i++) {lower(i) = LOW_BOUND;  upper(i) = UP_BOUND;}
+     lower(ndim)       = -5.0;     
+     upper(ndim)       = 5.0;
+
+     // Set infinite lower bound and finite upper bound for nonlinear constraint
+     lower(ndim+nclin+ncnln) =  -1.0E32; 
+     upper(ndim+nclin+ncnln) = 48;
+
+     //  Build an NPSOL object and optimize 
+     OptNPSOL objfcn(ndim,nclin,ncnln,hs65,init_hs65,ineq_hs65); 
+
+     objfcn.setX(x);
+     objfcn.setLower(lower);
+     objfcn.setUpper(upper);
+     objfcn.setFcnAccrcy(ftol);
+     objfcn.setOutputFile(opt_fp);
+     objfcn.optimize();
+     objfcn.printStatus("Solution from NPSOL ");
+     opt_fp.close();
+
+   }
+\endcode
+<p> <a href="ParallelOptimization.html"> Next Section: Parallel optimization
+</a> |  <a href="Classification.html"> Back to Solvers Page</a> </p> <hr />
+
+Last revised <em> September 14, 2006 </em> .
+
+*/

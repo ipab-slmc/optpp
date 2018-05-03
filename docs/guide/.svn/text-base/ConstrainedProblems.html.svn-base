@@ -1,0 +1,93 @@
+/** \page ConstrainedProblems  Constrained minimization 
+
+Consider the general nonlinear programming problem 
+
+<em> minimize </em> \f[ f(x) \f]
+<em> subject to </em> \f[ h(x) = 0, \f]
+<em>  </em> \f[ g(x) \ge 0. \f]
+
+<p>
+In this section, we provide the framework for the general nonlinear 
+programming problem.  We also examine the construction of linear, nonlinear 
+and compound constraints.  
+</p>
+<UL>
+<li> \ref  LinearConstraints
+<li> \ref  NonLinearConstraints
+<li> \ref  CompoundConstraintsDoc
+</UL>
+If a constraint has finite lower and upper bounds, OPT++ treats it as two
+separate constraints.  In the computation of the residuals and gradients,
+constraints with finite lower bounds appear first followed by those with
+finte upper bounds. Consequently, in the optimization summary, you will
+see the constraint count is double the original number of constraints.
+
+<p> 
+Now, we have all the necessary tools to build a nonlinear programming problem.
+</p>
+
+<UL>
+<li> \ref  Problem 
+<li> \ref  Fragments
+</UL>
+
+\section Problem Creating a general nonlinear programming problem 
+
+Let's consider Problem 65 from the Hock and Schittkowski suite of test
+problems:
+
+<em> minimize </em> 
+\f[ (x_1 - x_2)^2 + (1/9)(x_1 + x_2 - 10)^2 + (x_3 - 5)^2 \f]
+<em> subject to </em> \f[ x_1^2 + x_2^2 + x_3^2 \le 48, \f]
+<em> </em>  \f[-4.5 \le x_1 \le 4.5, \f]
+<em> </em>  \f[-4.5 \le x_2 \le 4.5, \f]
+<em> </em>  \f[ -5.0 \le x_3 \le 5.0 \f]
+
+Step 1: Build your constraints. The constraint set consists of bounds on
+the variables plus one nonlinear inequality.
+\code
+
+   // Number of bounds and number of nonlinear constraints
+   int numBds = 3, ncnln = 1;
+
+   ColumnVector lower(numBds), upper(numBds); 
+
+   // Construct the nonlinear equation
+   NLP* chs65      = new NLP( new NLF2(numBds,ncnln,ineq_hs65,init_hs65) );
+   Constraint ineq = new NonLinearInequality(chs65);
+
+   // Construct the bound constraints 
+   lower << -4.5 << -4.5 << -5.0;
+   upper <<  4.5 <<  4.5 <<  5.0 ;
+   Constraint bc   = new BoundConstraint(n,lower,upper); 
+
+   // Construct the compound constraint 
+   CompoundConstraint* constraints = new CompoundConstraint(ineq,bc);
+\endcode
+
+Step 2: Create a constrained problem where the objective function has
+analytic Hessians.
+\code
+   NLF2 hs65_problem(n,hs65,init_hs65,constraints);
+\endcode
+
+\section Fragments  Specifying the optimization method 
+In OPT++, the only freely available method to solve a general nonlinear problem 
+is OptNIPS, a nonlinear interior-point method. However, we do provide an
+wrapper to NPSOL, a sequential quadratic programming algorithm. For
+more information, go to the 
+<a href ="http://www.sbsi-sol-optimize.com/NPSOL.htm>NPSOL website</a>.
+<ol>
+	<li> \ref tstnips
+	<li> \ref tstnpsol
+</ol>
+
+<p> <a href="ParallelOptimization.html">
+	Next Section: Parallel optimization
+</a> |  <a href="Classification.html">Back to Solvers Page</a> </p> 
+
+Last revised <em> July 13, 2006</em>
+*/
+
+
+

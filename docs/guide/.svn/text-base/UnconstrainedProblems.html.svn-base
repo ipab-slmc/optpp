@@ -1,0 +1,70 @@
+/** \page UnconstrainedProblems  Unconstrained minimization 
+
+In this section, we present the constructors for an objective function,
+supply a prototype function evaluator, and provide examples for 
+solving the unconstrained minimization problem. 
+
+<UL>
+<li> \ref  UnconstrainedObject
+<li> \ref  UnconstrainedDefn
+<li> \ref  UnconstrainedFragments
+</UL>
+
+\section UnconstrainedDefn Defining an unconstrained problem 
+Let's consider the two-dimensional Rosenbrock problem with analytic derivatives.
+
+<em> minimize   </em> \f$100(x_2 - x_{1}^2)^2 + (1 - x_1)^2 \f$
+
+Representing the Rosenbrock problem as an NLF1 requires an 
+user-supplied function to evaluate the problem and construction of an NLF1.
+
+Step 1: Write a function that evaluates the Rosenbrock problem and gradient.
+\code
+   void rosen(int mode, int n, const ColumnVector& x, double& fx, 
+              ColumnVector& g, int& result)
+   { // Rosenbrock's function
+      double f1, f2, x1, x2;
+    
+      if (n != 2) return;
+
+      x1 = x(1);
+      x2 = x(2);
+      f1 = (x2 - x1 * x1);
+      f2 = 1. - x1;
+
+      if (mode & NLPFunction) {
+          fx  = 100.* f1*f1 + f2*f2;
+      }
+      if (mode & NLPGradient) {
+         g(1) = -400.*f1*x1 - 2.*f2; 
+         g(2) = 200.*f1;
+      }
+      result = NLPFunction & NLPGradient;
+   }
+\endcode
+
+Step 2: Create an NLF1 object.
+\code
+   NLF1 rosen_problem(n,rosen,init_rosen);
+\endcode
+
+\section UnconstrainedFragments  Specifying the optimization method 
+There are several algorithms in OPT++ to solve unconstrained problems.
+We provide examples of solving the Rosenbrock problem with a conjugate 
+gradient and Quasi-Newton method.
+
+<ol>
+	<li> \ref tstcg
+	<li> \ref tstqnewton
+</ol>
+
+<p> <a href="BoundConstrainedProblems.html">
+	Next Section: Bound-constrained Minimization
+</a> |  <a href="Classification.html">Back to Solvers Page</a> </p> 
+
+Last revised <em> July 13, 2006</em>
+
+*/
+
+
+

@@ -1,0 +1,54 @@
+<OPT>
+  <Welcome>
+    <Comment name="c1" visible="true">
+OPT++ is a library of nonlinear optimization algorithms
+written in C++.  The motivation for this package is to
+build an environment for the rapid prototyping and
+development of new optimization algorithms.  In
+particular, the focus is on robust and efficient
+algorithms for problems in which the function and
+constraint evaluations require the execution of an
+expensive computer simulation.  Currently, OPT++ includes
+the classic Newton methods, a nonlinear interior-point
+method, parallel direct search, a trust region - parallel
+direct search hybrid, and a wrapper to NPSOL.  Between
+these methods, a wide range of problems can be solved,
+e.g. with or without constraints, with or without analytic
+gradients, simulation based, etc.
+    </Comment>
+  </Welcome>
+  <ProblemSetup>
+    <Comment name="c2" visible="true">
+Required fields in BLUE.
+    </Comment>
+    <Library Second="true" FEval="rosen2" First="false" LibName="rosen.so" Init="init_rosen"/>
+    <VariableClass numVariables="2">
+      <Array name="VariableList">
+        <Variables initVal="-1.2" lower="" upper="" theName="OPT_x1">
+          <Comment name="c2" visible="true">
+Required fields in BLUE.
+          </Comment>
+        </Variables>
+        <Variables initVal="1.0" lower="" upper="" theName="OPT_x2">
+          <Comment name="c2" visible="true">
+Required fields in BLUE.
+          </Comment>
+        </Variables>
+      </Array>
+    </VariableClass>
+    <LConstraintClass numLConstraints="0">
+      <Array name="LinearConstraint"/>
+    </LConstraintClass>
+    <NLConstraintClass numNLConstraints="0">
+      <Array name="NonLinearConstraints"/>
+    </NLConstraintClass>
+  </ProblemSetup>
+  <Newton>
+    <Comment name="c2" visible="true">
+Required fields in BLUE.
+    </Comment>
+    <BasicOptions maxFeval="1000" outFile="tstNewtonxml.out" maxIter="100" Debug="false"/>
+    <AdvancedOptions maxStep="1.e3" conTol="1.49e-08" stepTol="1.49e-08" fcnTol="1.49e-08" gradTol="6.05e-06" minStep="1.49e-08"/>
+    <trustRegion gradMult="0.1"/>
+  </Newton>
+</OPT>

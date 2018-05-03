@@ -1,0 +1,54 @@
+/** \page ParallelOptimization Parallel Optimization
+
+Parallel optimization in OPT++ comes in a couple of different forms.
+The first occurs when traditionally serial methods, such as Newton
+methods, require finite-difference approximations to the gradient
+because analytic gradients are not available.  In this setting, the
+gradient evaluations are performed speculatively and in parallel.
+This is done automatically when the parallel version of OPT++ is
+built; however, there is some onus on the user who wants to take
+advantage of this capability.  In particular, it is necessary to
+initialize and finalize MPI and to set up file names or working
+directories that prevent messy file I/O.  The other form of
+parallelism occurs when the optimization algorithms themselves are
+parallel.  This occurs in three methods included in OPT++: parallel
+direct search (PDS), a trust region-parallel direct search hybrid
+(TRPDS) and a generating set search method (GSS).  Again, the parallelism is done automatically when the
+parallel version of OPT++ is built, but the user is required to
+perform a couple of tasks.
+
+The following examples demonstrate how to make use of the PDS and
+TRPDS methods.  Furthermore, these examples demonstrate the steps
+required to set up OPT++ to take advantage of its parallel
+capabilities, whether it be for speculative finite-difference gradient
+computations or for a parallel optimization algorithm.
+
+Notes: We hope to hide the steps required to set up parallelism in
+future releases.  Also, if the function evaluation is parallel, it
+currently cannot be used together with OPT++ parallel capabilities.
+We will be adding support for multi-level parallelism in future
+releases.
+
+\section ParallelFragments  Using a Parallel Optimization Method
+<ol>
+	        <li> \ref tstpds
+		<li> \ref tsttrpds
+		<li> \ref tstgss
+</ol>
+
+
+<p> <a href="MethodsDoc.html">Next Section: Optimization Methods </a> |
+<a href="index.html">Back to Main Page</a> </p> 
+
+Last revised <em> July 13, 2006</em> 
+	
+*/
+
+
+
+
+
+
+
+
+

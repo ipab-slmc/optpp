@@ -1,0 +1,613 @@
+
+<Maui RootClass="OPT">
+
+<!-- The first class defines the OPT++ desktop.  It includes 3 tabbed -->
+<!-- panels: a welcome panel, a problem set-up panel, and an algorithm -->
+<!-- set-up panel.  These panels are described in detail by the -->
+<!-- classes defined in the remainder of this file. -->
+
+   <Class type="OPT" label="OPT Start">
+      <Action label="Load File" dir="$HOME" class="ReadOptAction"/>
+      <Action verbose="false" label="Save Input for Opt++" dir="$HOME" class="SaveOptAction"/>
+      <Fields>
+         <Welcome name="Welcome" label="Welcome to OPT++"/>
+	 <ProblemSetup name ="ProblemSetup" label="Problem Specification"/>
+	 <AlgorithmDef name="AlgorithmDefinition" label="Optimization Algorithm"/>
+      </Fields>
+   </Class>
+
+<!-- ***********************THE WELCOME PANEL*********************** -->
+
+<!-- The welcome panel contains only a comment describing OPT++. -->
+
+   <Class type="Welcome">
+      <Fields>
+         <Comment name="c1">
+	    OPT++ is a library of nonlinear optimization algorithms
+	    written in C++.  The motivation for this package is to
+	    build an environment for the rapid prototyping and
+	    development of new optimization algorithms.  In
+	    particular, the focus is on robust and efficient
+	    algorithms for problems in which the function and
+	    constraint evaluations require the execution of an
+	    expensive computer simulation.  Currently, OPT++ includes
+	    the classic Newton methods, a nonlinear interior-point
+	    method, parallel direct search, a trust region - parallel
+	    direct search hybrid, and a wrapper to NPSOL.  Between
+	    these methods, a wide range of problems can be solved,
+	    e.g. with or without constraints, with or without analytic
+	    gradients, simulation based, etc.
+	 </Comment>
+      </Fields>
+   </Class>
+
+<!-- *******************THE PROBLEM SET-UP PANEL******************* -->
+
+<!-- This class defines the overall format of the problem set-up -->
+<!-- panel.  The problem set-up panel consists of two regions.  The -->
+<!-- first is an untabbed subpanel in which information regarding the -->
+<!-- nature of the function evaluation and the names of related files -->
+<!-- are requested.  The second region contains three tabbed subpanels -->
+<!-- that request information on the variables and the constraints. -->
+<!-- The classes that describe these regions and subpanels follow this -->
+<!-- class. -->
+
+   <Class type ="ProblemSetup">
+      <Fields>
+         <Comment name="c2">
+	    Required fields in BLUE.
+	 </Comment> 
+         <EvaluationType name="Evaluation" label="" useTab="false">
+	    <Help>
+	       The function to be evaluated can be executed in one of two ways.
+
+	       1.  Call a Subroutine
+	       If the code to be executed has or can have a subroutine interface of the form specified in the OPT++ documentation, it will be called with the appropriate arguments by the optimizer.
+
+	       2.  Launch an Application
+	       If the code to be executed is a script or a stand-alone analysis code, the optimizer will launch it via fork and will pass arguments via file I/O.
+	    </Help>
+	 </EvaluationType>
+	 <VariableClass name="VariablesBounds" label="Variables and Bounds"/>
+	 <LConstraintClass name="LinearConstraints" label="Linear Constraints"/>
+	 <NLConstraintClass name="NonLinearConstraints" label="Nonlinear Constraints"/>
+      </Fields>
+   </Class>
+
+<!-- The following three classes define a menu that appears in the -->
+<!-- first region of the problem set-up panel.  In particular, the -->
+<!-- menu allows the user to choose between a function evaluation -->
+<!-- based on launching an analysis code via a user-supplied script -->
+<!-- and one based on calling a user-supplied subroutine.  This first -->
+<!-- class is the top-level entry for the menu. -->
+
+   <Class type="EvaluationType" label="Click to Select (Default: Subroutine)" selectionLabel="Choose type of function evaluation:"/>
+
+<!-- This class defines the information required for the menu choice -->
+<!-- of a function evaluation based on calling a user-defined -->
+<!-- subroutine.  It requests information that includes the name of -->
+<!-- the initialization and evaluation subroutines, the name of the -->
+<!-- file where these can be found, the amount of derivative -->
+<!-- information that will be provided. -->
+
+   <Class type="Library" label="Subroutine (default)" base="EvaluationType">
+      <Fields>
+         <String name="Init" label="Enter the name of the initialization subroutine" toolTip="REQUIRED.  Value should be a string.">
+            <Help>
+               REQUIRED.  The initialization subroutine should perform any tasks that need only be done once before the optimization process is started.  The interface to the subroutine should be the following:
+
+                    void (*INITFCN)(int ndim, ColumnVector x),
+
+               where ndim is the number of variable parameters and x contains the values of those parameters.  Please see the OPT++ documentation for more detailed examples.  Note:  For now, this subroutine must be present.  If there is nothing to do at initialization time, the subroutine can simply return.
+            </Help>
+         </String>
+	 <String name="FEval" label="Enter the name of the function evaluation subroutine" toolTip="REQUIRED.  Value should be a string.">
+            <Help>
+               REQUIRED.  The function subroutine should perform any tasks required to compute the function value of interest.  The interface to the subroutine should be one of the following, depending on the problem characteritics:
+
+                    void (*USERFCN0)(int ndim, ColumnVector x, double fx, int result)
+if analytic derivatives are not available, or
+
+                    void (*USERFCN1)(int mode, int ndim, ColumnVectorx, double fx, ColumnVector gx, int result)
+if an analytic gradient is provided, or
+
+                    void (*USERFCN2)(int mode, int ndim, ColumnVector x, double fx, ColumnVector gx, SymmetricMatrix Hx, int result)
+if both an analytic gradient and analytic Hessian are provided,
+
+               where ndim is the number of optimization variables, x contains the values of those variables, fx is the function value, gx containins the gradient, and Hx  contains the Hessian.  The argument mode denotes the type of evaluation (function, gradient, or Hessian) that is being requested by the optimizer.  The argument result denotes the type of evaluation was done.  Please see the OPT++ documentation for more information on how to use the mode and result arguments.
+            </Help>
+         </String>
+	 <String name="LibName" label="Enter the name of the library which contains these subroutines" toolTip="REQUIRED.  Value should be a string.">
+            <Help>
+               REQUIRED.  The subroutines for the initialization and evaluation of the function must be contained in a dynamically loadable library, i.e., the file named here must have a file extension of .so.  For more information on building a dynamically loadable library, please see the OPT++ documentation.
+            </Help>
+         </String>
+	 <Boolean name="First" label="First Derivative Information Available" default="false" toolTip="click here">
+            <Help>
+               Check this box if you are providing code to compute the gradient.  The code for computing the gradient should appear in the same subroutine as the code to compute the value of the function.
+            </Help>
+         </Boolean>
+	 <Boolean name="Second" label="First and Second Derivative Information Available" default="false">
+            <Help>
+               Check this box if you are providing code to compute the gradient and code to compute the Hessian.  The code for computing the gradient and the Hessian should appear in the same subroutine as the code to compute the value of the function.
+            </Help>
+         </Boolean>
+      </Fields>
+   </Class>
+
+<!-- This class defines the information required for the menu choice -->
+<!-- of a function evaluation based on running an analysis code.  It -->
+<!-- requests information needed to execute such a function, including -->
+<!-- the name of the main script, the name of the model directory, and -->
+<!-- the name of the input deck for the analysis code. -->
+
+   <Class type="Application" label="Analysis Code" base = "EvaluationType">
+      <Fields>
+         <String name="scriptName" label="Enter the name of the controlling script" toolTip="REQUIRED.  Value should be a string.">
+            <Help>
+               REQUIRED.  The script named here can be any type of executable script (shell, perl, etc.).  It should contain the sequence of steps necessary to execute the application code and obtain the function value.  If the script is being executed in order to obtain the value of an objective function, then the function value should be written to a file named fvalue.out.  If the script is being executed to obtain the value of a nonlinear constraint, the the value should be written to a file named convalue.out.
+            </Help>
+         </String>
+	 <String name="modelDir" label="Enter the name of the directory containing all model information" toolTip="REQUIRED.  Value should be a string.">
+            <Help>
+               REQUIRED.  The directory named here should contain all files needed for the function evaluation.  This includes all input files needed by the application code, the script named above, and any other scripts or tools needed in the process.  The model directory should have a subdirectory named "makecopies".  This subdirectory should contain all files that will be changed as part of the application run.  This include, for example, the templated input deck.
+            </Help>
+         </String>
+	 <String name="modelInput" label="Enter the name of the input deck" toolTip="REQUIRED.  Value should be a string.">
+            <Help>
+               REQUIRED.  The file named here should be the primary input file to the application code.  In other words, it should be the file containing the quantities to be varied during the optimization.  In the model directory named above, there should be a file of this name with a .Tmplt extension.  In that file, the values of the quantities to be varied should be replaced by key words.  The key words should be unique, as the optimizer will do a search and replace on them.  Note that the labels entered for the variables below should correspond to the key words.
+            </Help>
+         </String>
+      </Fields>
+   </Class>
+
+<!-- The following two classes define one of the tabbed subpanels in -->
+<!-- the second region of the problem set-up panel.  This panel is -->
+<!-- designated for variable information.  The main part of the panel -->
+<!-- requests the number of variables and a list of the variables. -->
+
+   <Class type="VariableClass">
+      <Fields>
+         <Integer name="numVariables" label="Enter the number of variable parameters" lower="1" toolTip="REQUIRED.  Value should be an integer greater than or equal to 1.">
+            <Help>
+               REQUIRED.  The value entered here should specify the number of parameters you would like to vary.
+            </Help>
+         </Integer>
+	 <Array name="VariableList" label="Variables" selectionLabel="Select a Variable">
+	    <Master label="$theName">
+	       <Variables name="Variable" label="Variable"/>
+	    </Master>
+	 </Array>
+      </Fields>
+   </Class>
+
+<!-- This class defines the pop-up box launched by adding a variable -->
+<!-- to the list on the main part of the variable panel.  It requests -->
+<!-- more detailed information about that variable, including a label, -->
+<!-- the initial value, and bounds if they exist. -->
+
+   <Class type="Variables">
+      <Fields>
+         <Comment name="c2">
+	    Required fields in BLUE.
+	 </Comment> 
+         <String name="theName" label="Variable Label" default="OPT_" toolTip="REQUIRED.  Value should be a string.">
+            <Help>
+               REQUIRED.  If you are using the subroutine interface, the label can be whatever you choose.  If you are using the application interface, it should correspond to one of the key words in the templated input deck.  We recommend including the OPT_ prefix to guarantee uniqueness of the label within the input deck.
+            </Help>
+         </String>
+	 <Double name="initVal" label="Initial Value" default="0.0" optional="true" toolTip="Value should be a double.">
+            <Help>
+               This should be your best guess at the value of this parameter.  If you do not provide one, it will default to a value of zero.
+            </Help>
+         </Double>
+	 <Double name="lower" label="Lower Bound" optional="true" toolTip="Value should be a double.">
+            <Help>
+               The value entered here should define the lowest value this variable is allowed to take.  If there is no lower bound on this variable, this entry should be left blank.
+            </Help>
+         </Double>
+	 <Double name="upper" label="Upper Bound" optional="true" toolTip="Value should be a double.">
+            <Help>
+               The value entered here should define the highest value this variable is allowed to take.  If there is no upper bound on this variable, this entry should be left blank.
+            </Help>
+         </Double>
+      </Fields>
+   </Class>
+
+<!-- The following two classes define the second tabbed subpanel in -->
+<!-- the second region of the problem set-up panel.  This panel is -->
+<!-- designated for linear constraint information.  The main part of -->
+<!-- the panel requests the number of linear constraints and a list of -->
+<!-- those constraints. -->
+
+   <Class type="LConstraintClass">
+      <Fields>
+         <Integer name="numLConstraints" label="Enter the number of linear constraints on the control variables" lower="0" toolTip="REQUIRED.  Value should be an integer greater or equal to 0.">
+            <Help>
+               REQUIRED.  The value entered here should specify the number of linear constraints that will be defined on the control variables only.  Any constraints on the state variables should be defined on the nonlinear constraints panel.
+            </Help>
+         </Integer>
+	 <Array name="LinearConstraint" label="Linear Constraints" selectionLabel="Select a Constraint">
+	    <Master label="$constraintName">
+	       <LinearConstraint name="Constraint" label="Linear Constraint"/>
+	    </Master>
+	 </Array>
+      </Fields>
+   </Class>
+
+<!-- This class defines the pop-up box launched by adding a linear -->
+<!-- constraint to the list on the main part of the linear constraint -->
+<!-- panel.  It requests more detailed information about that -->
+<!-- constraint, including a label, the coefficient of each variable -->
+<!-- in the linear equation, the comparison operator, and the -->
+<!-- appropriate bound the equation. -->
+
+   <Class type="LinearConstraint">
+      <Fields>
+         <Comment name="c2">
+	    Required fields in BLUE.
+	 </Comment> 
+         <String name="constraintName" label="Constraint Label" toolTip="REQUIRED.  Value should be a string.">
+            <Help>
+               REQUIRED.  The label for the linear constraint can be anything you like.  We recommend that it be descriptive of the physical phenomenon it represents.
+            </Help>
+         </String>
+	 <Table name="Variables" selectionLabel="Terms to Sum">
+            <Help>
+               REQUIRED.  The table contains two columns.  The entries in the first column should be the labels of the variables included in the sum.  The entries in the second column should be the corresponding coefficients.  For example, if the linear constraint is
+
+                    3.0*OPT_x1 + 2.0*OPT_x3 >= 7.0,
+
+               then the entries in the first column would be OPT_x1 and OPT_x3.  The entries in the second column would be 3.0 and 2.0.  The comparison operator and the right-hand side are designated below.
+            </Help>
+	    <Header name="Coefficient" label="($Coefficient)$Variable">
+	       <String name="Variable" default="OPT_" toolTip="REQUIRED.  Value should be a string."/>
+	       <Double name="Coefficient" default="0.0" toolTip="REQUIRED.  Value should be a double."/>
+	    </Header>
+	 </Table>
+	 <String name="operator" label="Test Condition" toolTip="REQUIRED.  Choose equality or inequality.">
+	    <Menu options=">=|="/>
+	 </String>
+	 <Double name="rhs" label="Right Hand Side" default="0.0" optional="true" toolTip="Value should be a double.">
+            <Help>
+               If the test condition is >=, this value should be the lower bound on the constraint defined here.  If the condition is =, this value is the right-hand side of the equation.  If not provided, it will take on a default value of zero.
+            </Help>
+         </Double>
+      </Fields>
+   </Class>
+
+<!-- The following two classes define the final tabbed subpanel in -->
+<!-- the second region of the problem set-up panel.  This panel is -->
+<!-- designated for nonlinear constraint information.  The main part -->
+<!-- of the panel requests the number of nonlinear constraints and a -->
+<!-- list of those constraints. -->
+
+   <Class type="NLConstraintClass" >
+      <Fields>
+         <Integer name="numNLConstraints" label="Enter the number of nonlinear constraints" lower="0" toolTip="REQUIRED.  Value should be an integer greater than or equal to 0.">
+            <Help>
+               REQUIRED.  The value entered here should specify the number of nonlinear constraints that will be defined.  This includes linear constraints on the state variables, as state variables are likely obtained from a simulation, thus making them nonlinear.
+            </Help>
+         </Integer>
+         <Array name="NonLinearConstraints" label="Nonlinear Constraints" selectionLabel="Select a Constraint">
+	    <Master label="$theName">
+	       <NonLinearConstraint name="Constraint"/>
+	    </Master>
+	 </Array>
+      </Fields>
+   </Class>
+
+<!-- This class defines the pop-up box launched by adding a nonlinear -->
+<!-- constraint to the list on the main part of the nonlinear -->
+<!-- constraint panel.  It requests more detailed information about -->
+<!-- that constraint, including a label, the same -->
+<!-- information (in the same format) that is requested for the -->
+<!-- function evalution, the comparison operator, and the appropriate -->
+<!-- bound on the equation. -->
+
+   <Class type="NonLinearConstraint">
+      <Fields>
+         <Comment name="c2">
+	    Required fields in BLUE.
+	 </Comment> 
+         <String name="theName" label="Constraint Label" toolTip="REQUIRED.  Value should be a string.">
+            <Help>
+               REQUIRED.  The label for the nonlinear constraint can be anything you like.  We recommend that it be descriptive of the physical phenomenon it represents.
+            </Help>
+         </String>
+         <EvaluationType name="Evaluation" label="" useTab="false"/>
+	 <String name="operator" label="Test Condition" toolTip="REQUIRED.  Choose equality or inequality.">
+	    <Menu options=">=|="/>
+	 </String>
+	 <Double name="rhs" label="Right Hand Side" default="0.0" optional="true" toolTip="Value should be a double.">
+            <Help>
+               If the test condition is >=, this value should be the lower bound on the constraint defined here.  If the condition is =, this value is the right-hand side of the equation.  If not provided, it will take on a default value of zero.
+            </Help>
+         </Double>
+      </Fields>
+   </Class>
+
+<!-- *******************THE ALGORITHM SET-UP PANEL******************* -->
+
+<!-- The algorithm set-up panel allows the user to select the -->
+<!-- optimization algorithm to be used.  It also allows the user to -->
+<!-- set the values of the algorithmic parameters.  These parameters -->
+<!-- are divided into three sets.  The basic parameters are those that -->
+<!-- almost any user may want to change.  The advanced parameters are -->
+<!-- those that only an expert user may want to change.  Finally, -->
+<!-- there are some algorithm-specific parameters that are defined in -->
+<!-- the subclasses that appear later in this file.  This class -->
+<!-- defines the overall organization of this information on the -->
+<!-- algorithm set-up panel. -->
+
+   <Class type="AlgorithmDef" label="Click to Select (Default: NIPS)" selectionLabel="Choose an optimization algorithm:">
+      <Fields>
+         <Comment name="c2">
+	    Required fields in BLUE.
+	 </Comment>
+	 <BasicOptions name="BasicOptions" label="Basic Options" useTab="false"/>
+	 <AdvancedOptions name="AdvancedOptions" label="Advanced Options" collapsible="true" beginCollapsed="true"/>
+      </Fields>
+   </Class>
+
+<!-- This class defines parameters common to all algorithms that any -->
+<!-- OPT++ user may want to change.  They include the output file, the -->
+<!-- maximum number of iterations, and the maximum number of -->
+<!-- iterations. -->
+
+   <Class type="BasicOptions">
+      <Fields>
+	 <String name="outFile" label="OPT++ Output File" default="OPT_Results.out" optional="true" toolTip="Value should be a string.">
+            <Help>
+               The file named here will contain all of the information associated with the optimization run such as function value at each iteration, number of iterations, etc.  If you would like to see more detailed information regarding an application, you will have to look in the application output files.  If a name is not provided here, it will be set to a default value.
+            </Help>
+         </String>
+	 <Integer name="maxIter" label="Maximum Number of Iterations" default="100" lower="1" optional="true" toolTip="Value should be an integer greater than or equal to 1.">
+            <Help>
+               This is one way to limit how long the optimization algorithm will run.  It is particularly useful in scenarios where the presence of numerical errors limits the effectiveness of numerical stopping criteria.  If a value is not provided here, it will be set to a default value.
+            </Help>
+         </Integer>
+	 <Integer name="maxFeval" label="Maximum Number of Function Evaluations" default="1000" lower="1" optional="true" toolTip="Value should be an integer greater than or equal to 1.">
+            <Help>
+               This is one way to limit how long the optimization algorithm will run.  It is particularly useful in scenarios where you have expensive function evaluations and are limited by time (and thus limited by the number of function evaluations that can be done).  If a value is not provided here, it will be set to a default value.
+            </Help>
+         </Integer>
+	 <Boolean name="Debug" label="Debug" default="true">
+            <Help>
+               This flag specifies how much output is reported in the OPT++ Output File.  When turned off, you will see only summary information.  When turned on, you will see all of the intermediate values of quantities of interest.
+            </Help>
+         </Boolean>
+      </Fields>
+   </Class>
+
+<!-- This class defines parameters common to all algorithms that -->
+<!-- probably only expert OPT++ users may want to change.  They -->
+<!-- include the various stopping tolerances, the allowable -->
+<!-- neighborhood around the constraints, and the maximum and minimum -->
+<!-- allowable step sizes. -->
+
+   <Class type="AdvancedOptions">
+      <Fields>
+         <Double name="fcnTol" label="Function Tolerance" default="1.49e-08" lower="1.0e-15" upper="1.0" optional="true" toolTip="Value should be a double between 1.0e-15 and 1.0.">
+            <Help>
+               The value entered here is one of the stopping criteria used by the OPT++ algorithms.  When a relative comparison of the function values of two successive iterates falls below this threshold, the algorithm will stop and declare success.  This value should be on the same order of accuracy you expect from your function.  If a value is not provided here, it will be set to a default value.
+            </Help>
+         </Double>
+	 <Double name="gradTol" label="Gradient Tolerance" default="6.05e-06" lower="1.0e-15" upper="1.0" optional="true" toolTip="Value should be a double between 1.0e-15 and 1.0.">
+            <Help>
+               The value entered here is one of the stopping criteria used by the OPT++ algorithms.  When the norm of the gradient falls below this threshold, in either a relative or absolute sense, the algorithm will stop and declare success.  If a value is not provided here, it will be set to a default value.
+            </Help>
+         </Double>
+	 <Double name="stepTol" label="Step Tolerance" default="1.49e-08" lower="1.0e-15" upper="1.0" optional="true" toolTip="Value should be a double between 1.0e-15 and 1.0.">
+            <Help>
+               The value entered here is one of the stopping criteria used by the OPT++ algorithms.  When the size of the step falls below this threshold, in either a relative sense, the algorithm will stop and declare success.  This value should be of a size such that changes of this magnitude do not result in appreciable changes in the function value.  If a value is not provided here, it will be set to a default value.
+            </Help>
+         </Double>
+	 <Double name="conTol" label="Constraint Tolerance" default="1.49e-08" lower="0.0" upper="1.0" optional="true" toolTip="Value should be a double between 1.0e-15 and 1.0.">
+            <Help>
+               The value entered here defines the neighborhood around the constraint in which the constraint is considered to be active at the current iterate, i.e. where the current iterate is considered to be touching a constraint.  If a value is not provided here, it will be set to a default value.
+            </Help>
+         </Double>
+	 <Double name="minStep" label="Set Minimum Step Length" default="1.49e-08" lower="1.0e-15" optional="true" toolTip="Value should be a double greater than or equal to 1.0e-15.">
+            <Help>
+               The smallest step it makes sense for the algorithm to take.  This value should be at least the size of the step tolerance.  If a value is not provided here, it will be set to a default value.
+            </Help>
+         </Double>
+	 <Double name="maxStep" label="Set Maximum Step Length" default="1.0e3" lower="1.0e-15" optional="true" toolTip="Value should be a double greater than or equal to 1.0e-15.">
+            <Help>
+               The largest step it makes sense for the algorithm to take.  This value should be at least the size of the step tolerance.  If a value is not provided here, it will be set to a default value.
+            </Help>
+         </Double>
+      </Fields>
+   </Class>
+
+<!-- The remaining classes define any algorithm-specific parameters. -->
+<!-- This class represents the NIPS entry in the algorithm menu. -->
+
+   <Class type="NIPS" label="NIPS (default)" base="AlgorithmDef">
+      <Fields>
+         <NIPSvar name="NIPSParameters" label="Additional NIPS Options" collapsible="true" beginCollapsed="true">
+            <Help>
+               The merit function is used by the algorithm to determine progress.  The default merit function is recommended.  The KKT norm merit function is not recommended.
+            </Help>
+         </NIPSvar>
+      </Fields>
+   </Class>
+
+<!-- This class sets up the menu for choosing a merit function for -->
+<!-- NIPS. -->
+
+   <Class type="NIPSvar" label="Click to Select (Default: Argaez-Tapia)" selectionLabel="Choose a merit function"/>
+
+<!-- This class contains the NIPS-specific parameters and sets the -->
+<!-- defaults for the Argaez-Tapia merit function.  It includes the -->
+<!-- centering parameter, the step length to the boundary, and the -->
+<!-- maximum number of backtrack iterations allowed. -->
+
+   <Class type="argaezTapia" label="Argaez-Tapia (default)" base="NIPSvar">
+      <Fields>
+         <Double name="centParm" label="Centering Parameter" default="0.2" lower="1.0e-15" upper="1.0" optional="true" toolTip="Value should be a double between 1.0e-15 and 1.0.">
+            <Help>
+               This is a parameter that maintains centrality among the constraints.  The larger the value, the more central the iterates remain.  The smaller the value, the more agressive the step at each iteration.  Smaller values should be used when the function is expected to be "nice", as this will allow for faster convergence resulting from the more agressive steps.  If this value is not provided here, a default value will be set.
+            </Help>
+         </Double>
+	 <Double name="lenBound" label="Step Length to Boundary" default="0.99995" lower="1.0e-15" upper="1.0" optional="true" toolTip="Value should be a double between 1.0e-15 and 1.0.">
+         <Help>
+            This parameter defines the percentage of the full computed step that should be taken with the goal of preventing the iterates from getting to close to the constraints.  Smaller values represent short, conservative steps.  Larger values represent more agressive steps.  If this value is not provided here, a default value will be set.
+         </Help>
+         </Double>
+	 <Integer name="maxBack" label="Maximum Backtrack Iterations" default="5" lower="1" optional="true" toolTip="Value should be an integer greater than or equal to 1.">
+            <Help>
+               The number of "retries" with successively smaller step lengths before the algorithm is considered to be "stalled" at the current iterate.  This value should be a small to modest number in order to avoid doing an excessive number of function evaluations.  If this value is not provided here, a default value will be set.
+            </Help>
+         </Integer>
+      </Fields>
+   </Class>
+
+<!-- This class contains the NIPS-specific parameters and sets the -->
+<!-- defaults for the KKT norm merit function.  It includes the -->
+<!-- centering parameter, the step length to the boundary, and the -->
+<!-- maximum number of backtrack iterations allowed. -->
+
+   <Class type="NormFMu" label="Norm of KKT conditions" base="NIPSvar">
+      <Fields> 
+         <Double name="centParm" label="Centering Parameter" default="0.2" lower="1.0e-15" upper="1.0" optional="true" toolTip="Value should be a double between 1.0e-15 and 1.0."> 
+            <Help>
+               This is a parameter that maintains centrality among the constraints.  The larger the value, the more central the iterates remain.  The smaller the value, the more agressive the step at each iteration.  Smaller values should be used when the function is expected to be "nice", as this will allow for faster convergence resulting from the more agressive steps.  If this value is not provided here, a default value will be set.
+            </Help>
+         </Double>
+	 <Double name="lenBound" label="Step Length to Boundary" default="0.8" lower="1.0e-15" upper="1.0" optional="true" toolTip="Value should be a double between 1.0e-15 and 1.0."> 
+         <Help>
+            This parameter defines the percentage of the full computed step that should be taken with the goal of preventing the iterates from getting to close to the constraints.  Smaller values represent short, conservative steps.  Larger values represent more agressive steps.  If this value is not provided here, a default value will be set.
+         </Help>
+         </Double>
+	 <Integer name="maxBack" label="Maximum Backtrack Iterations" default="5" lower="1" optional="true" toolTip="Value should be an integer greater than or equal to 1.">
+            <Help>
+               The number of "retries" with successively smaller step lengths before the algorithm is considered to be "stalled" at the current iterate.  This value should be a small to modest number in order to avoid doing an excessive number of function evaluations.  If this value is not provided here, a default value will be set.
+            </Help>
+         </Integer>
+      </Fields>
+   </Class>
+
+<!-- This class contains the NIPS-specific parameters and sets the -->
+<!-- defaults for the Vanderbei-Shanno merit function.  It includes -->
+<!-- the centering parameter, the step length to the boundary, and the -->
+<!-- maximum number of backtrack iterations allowed. -->
+
+   <Class type="VanShanno" label="Vanderbei-Shanno" base="NIPSvar">
+      <Fields>
+         <Double name="centParm" label="Centering Parameter" default="0.1" lower="1.0e-15" upper="1.0" optional="true" toolTip="Value should be a double between 1.0e-15 and 1.0.">
+            <Help>
+               This is a parameter that maintains centrality among the constraints.  The larger the value, the more central the iterates remain.  The smaller the value, the more agressive the step at each iteration.  Smaller values should be used when the function is expected to be "nice", as this will allow for faster convergence resulting from the more agressive steps.  If this value is not provided here, a default value will be set.
+            </Help>
+         </Double>
+	 <Double name="lenBound" label="Step Length to Boundary" default="0.95" lower="1.0e-15" upper="1.0" optional="true" toolTip="Value should be a double between 1.0e-15 and 1.0.">
+            <Help>
+               This parameter defines the percentage of the full computed step that should be taken with the goal of preventing the iterates from getting to close to the constraints.  Smaller values represent short, conservative steps.  Larger values represent more agressive steps.  If this value is not provided here, a default value will be set.
+            </Help>
+         </Double>
+	 <Integer name="maxBack" label="Maximum Backtrack Iterations" default="5" lower="1" optional="true" toolTip="Value should be an integer greater than or equal to 1.">
+            <Help>
+               The number of "retries" with successively smaller step lengths before the algorithm is considered to be "stalled" at the current iterate.  This value should be a small to modest number in order to avoid doing an excessive number of function evaluations.  If this value is not provided here, a default value will be set.
+            </Help>
+         </Integer>
+      </Fields>
+   </Class>
+
+<!-- This class represents the PDS entry in the algorithm menu. -->
+
+   <Class type="PDS" label="PDS" base="AlgorithmDef">
+      <Fields>
+         <PDSvar name="PDSParameters" label="Additional PDS Options" collapsible="true" beginCollapsed="true"/>
+      </Fields>
+   </Class>
+
+<!-- This class contains the PDS-specific parameters, including search -->
+<!-- pattern size, simplex type, and location of the TMP directory. -->
+
+   <Class type="PDSvar">
+      <Fields>
+	 <String name="simpType" label="Type of initial simplex">
+	    <Menu options="right-angle simplex|regular simplex|scaled right-angle simplex"/>
+            <Help>
+               The initial simplex defines the core search pattern for PDS.  The right-angle simplex is recommended for problems with bound constraints.  The scaled right-angle simplex is recommended for problems in which variables are of notable different scale.
+            </Help>
+	 </String>
+	 <Integer name="searchSize" label="Size of search pattern" default="64" lower="2" optional="true" toolTip="Value should be an integer at least twice the number of variables.">
+            <Help>
+               This value defines the size of the search pattern to be used by the PDS algorithm.  It should be at least twice the dimension of the problem.  If you are running this on a parallel machine, the recommendation is one pattern point per processor if possible.  If this value is not provided here, a default value will be set.
+            </Help>
+         </Integer>
+      </Fields>
+   </Class>
+
+<!-- This class represents the Newton entry in the algorithm menu. -->
+
+   <Class type="Newton" label="Newton (bound-constrained or unconstrained problems only)" base="AlgorithmDef">
+      <Fields>
+         <Newtonvar name="NewtonParameters" label="Additional Newton Options" collapsible="true" beginCollapsed="true">
+            <Help>
+               The search strategy determines the method by which the step is computed at each iteration.  They are more or less comparable; however, the trust region does not support bound constraints.  The PDS search strategy is most useful when your function and/or gradient approximations have limited accuracy and when you have a parallel computer at your disposal.
+            </Help>
+         </Newtonvar>
+      </Fields>
+   </Class>
+
+<!-- This class sets up the menu for choosing a search strategy for -->
+<!-- the Newton algorithms. -->
+
+   <Class type="Newtonvar" label="Click to Select (Default: Line Search)" selectionLabel="Choose a search strategy"/>
+
+<!-- This class contains the Newton-specific parameters and sets the -->
+<!-- defaults for the linesearch search strategy.  It includes the -->
+<!-- linesearch tolerance and the maximum number of bactracks -->
+<!-- allowed. -->
+
+   <Class type="lineSearch" label="Line Search (default)" base="Newtonvar"> 
+      <Fields>
+	 <Integer name="maxBTIter" label="Maximum BackTrack Iterations" default="5" lower="1" optional="true" toolTip="Value should be an integer greater than or equal to 1.">
+            <Help>
+               This value corresponds to the number of "retries", with successively smaller step lengths, before the algorithm is considered to be "stalled" at the current iterate.  This value should be a small to modest number in order to avoid doing an excessive number of function evaluations.  If this value is not provided here, a default value will be set.
+            </Help>
+         </Integer>
+      </Fields>
+   </Class>
+
+<!-- This class contains the Newton-specific parameters and sets the -->
+<!-- defaults for the trust-region search strategy.  In this case, -->
+<!-- there are no parameters to be set. -->
+
+   <Class type="trustRegion" label="Trust Region (unconstrained problems only)" base="Newtonvar">
+      <Fields>
+         <Double name="gradMult" label="Gradient Norm Multiplier (used to set initial TR size)" default="0.1" lower="1.0e-15" optional="true" toolTip="Value should be a double greater than or equal to 1.0e-15.">
+            <Help>
+               This value is used to define the initial trust region size as some multiple of the norm of the gradient.  If you expect your function to be quadratic, or very close to it, near your initial guess, the value entered here should be at least 1.0.  Otherwise, it should be notable less than 1.0.  If this value is not provided here, a default value will be set.
+            </Help>
+         </Double>
+      </Fields>
+   </Class>
+
+<!-- This class contains the Newton-specific parameters and sets the -->
+<!-- defaults for the PDS search strategy.  It includes the size of -->
+<!-- the search pattern and the location of the TMP directory. -->
+
+   <Class type="trustPDS" label="PDS" base="Newtonvar">
+      <Fields> 
+         <Double name="gradMult" label="Gradient Norm Multiplier (used to set initial TR size)" default="0.1" lower="1.0e-15" optional="true" toolTip="Value should be a double greater than or equal to 1.0e-15.">
+            <Help>
+               This value is used to define the initial trust region size as some multiple of the norm of the gradient.  If you expect your function to be quadratic, or very close to it, near your initial guess, the value entered here should be at least 1.0.  Otherwise, it should be notable less than 1.0.  If this value is not provided here, a default value will be set.
+            </Help>
+         </Double>
+         <Integer name="searchSize" label="Search Scheme Size" default="64" lower="2" optional="true" toolTip="Value should be an integer at least twice the number of variables.">
+            <Help>
+               This value defines the size of the search pattern to be used by the PDS algorithm.  It should be at least twice the dimension of the problem.  If you are running this on a parallel machine, the recommendation is one pattern point per processor if possible.  If this value is not provided here, a default value will be set.
+            </Help>
+         </Integer>
+      </Fields>
+   </Class>
+
+<!-- This class represents the CG entry in the algorithm menu. -->
+
+   <Class type="CG" label="CG (unconstrained problems only)" base="AlgorithmDef"/>
+
+</Maui>

@@ -1,0 +1,320 @@
+
+/** \page example1 Example 1: Unconstrained Quasi-Newton Without Derivatives
+
+This example is intended to demonstrate how to set up and solve a very
+simple problem.  We will show you how to solve (unconstrained)
+Rosenbrock's function in two dimensions, i.e.,
+
+<em> minimize </em> \f[100(x_2 - x_{1}^2)^2 + (1 - x_1)^2 \f]
+
+For demonstration purposes, we will assume that there are no analytic
+derivatives available so we will use finite-difference approximations
+to the gradient and a quasi-Newton algorithm with a BFGS approximation
+to the Hessian.  Recall that it is necessary to write C++ code for the
+main routine that sets up the problem and the algorithm and for the
+subroutines that initialize and evaluate the function.  We step
+through the specifics below.
+
+<ul>
+  <li> \ref main1 <br>
+  <li> \ref function1 <br>
+  <li> \ref run1 <br>
+</ul>
+
+\section main1 Main Routine
+
+First include the necessary header files.  Start with any C++/C header
+files that are needed.  In this case, a bit of I/O.  The other
+two header files are OPT++ header files.  NLF contains objects, data,
+and methods required for setting up the function/problem.  OptQNewton
+contains the objects, data, and methods required for using an
+unconstrained quasi-Newton optimization method. The last statement 
+<em> using NEWMAT::ColumnVector</em> introduces the data member ColumnVector
+from the matrix library namespace NEWMAT.  The use of namespaces prevents
+potential conflicts with third party libraries that may also have a data
+member named ColumnVector.
+
+<table>
+<tr><td>
+\code
+#include <fstream>
+
+#include "NLF.h"
+#include "OptQNewton.h"
+
+using NEWMAT::ColumnVector;
+\endcode
+</table>
+
+The following two lines serve as the declarations of the pointers to the
+subroutines that initialize the problem and evaluate the objective
+function, respectively.
+
+<table>
+<tr><td>
+\code
+void init_rosen(int ndim, ColumnVector& x);
+void rosen(int ndim, const ColumnVector& x, double& fx, int& result);
+\endcode
+</table>
+
+The next few lines complete the setup of the problem, which include 
+setting the dimension of the problem and creating the nonliner function
+object.  To create the nonlinear function object use
+the dimension of the problem and the pointers to the subroutines
+declared above.  The FDNLF1 object has built-in finite-difference
+approximations to the gradient.  
+
+<table>
+<tr><td>
+\code
+int main()
+{
+  int ndim = 2;
+
+  FDNLF1 nlp(ndim, rosen, init_rosen);
+\endcode
+</table>
+  
+Now, let's build a quasi-Newton algorithm object using the nonlinear problem that
+has just been created.  The quasi-Newton algorithm will use BFGS
+updates to approximate the Hessian.  In addition, set any of the
+algorithmic parameters to desired values.  All parameters have default
+values, so it is not necessary to set them unless you have specific
+values you wish to use.  In this example, we set the globalization
+strategy, the maximum number of function evaluations allowed, the
+function tolerance (used as a stopping criterion), and the name of the
+output file.
+
+<table>
+<tr><td>
+\code
+  OptQNewton objfcn(&nlp);
+
+  objfcn.setSearchStrategy(TrustRegion);
+  objfcn.setMaxFeval(200);
+  objfcn.setFcnTol(1.e-4);
+
+// The "0" in the second argument says to create a new file.  A "1"
+// would signify appending to an existing file.
+
+  if (!objfcn.setOutputFile("example1.out", 0))
+    cerr << "main: output file open failed" << endl;
+\endcode
+</table>
+
+Now call the algorithm's optimize method to solve the problem.
+
+<table>
+<tr><td>
+\code
+  objfcn.optimize();
+\endcode
+</table>
+
+Finally, print out some summary information and clean up before exiting.  The
+summary information is handy, but not necessary.  The cleanup flushes
+the I/O buffers.
+
+<table>
+<tr><td>
+\code
+  objfcn.printStatus("Solution from quasi-newton");
+  objfcn.cleanup();
+}
+\endcode
+</table>
+
+Now that the main routine is in place, we step through the code
+required for the initialization and evaluation of the function.
+
+\section function1 User-Defined Functions
+
+This section contains examples of the user-defined functions that are
+required.  The first performs the initialization of the problem.  The
+second performs the evaluation of the function.
+
+First, include the necessary header files.  In this case, we need the
+OPT++ header file, NLP, for some definitions.  Next, we define the scope of the
+methods using namespace. The first statment introduces the data
+member ColumnVector from the namespace NEWMAT.  The second statement allows
+us to refer to all the methods in the OPTPP namespace.  These two statements
+are crucial for a sucessful compilation.
+
+<table>
+<tr><td>
+\code
+#include "NLP.h"
+
+using NEWMAT::ColumnVector;
+using namespace::OPTPP;
+\endcode
+</table>
+
+The subroutine that initializes the problem should perform any
+one-time tasks that are needed for the problem.  One part of that is
+checking for error conditions in the setup.  In this case, the
+dimension, <em>ndim</em>, can only take on a value of 2.  Using "exit"
+is not the ideal way to deal with error conditions, but it serves well
+as an example.
+
+<table>
+<tr><td>
+\code
+void init_rosen (int ndim, ColumnVector& x)
+{
+  if (ndim != 2)
+    exit (1);
+\endcode
+</table>
+
+The initialization is also an ideal place to set the initial values of
+the optimization parameters, <em>x</em>.  This can be hard coded, as
+done here, or it can be done in some other manner (e.g., reading them
+in from a file, the code for which should appear here).
+
+<table>
+<tr><td>
+\code
+// ColumnVectors are indexed from 1, and they use parentheses around
+// the index.
+
+  x(1) = -1.2;
+  x(2) =  1.0;
+}
+\endcode
+</table>
+
+The last piece of code is a subroutine that will evaluate the
+function.  In this problem, we are trying to find the minimum value of
+Rosenbrock's function, so it is necessary to write the code that
+computes the value of that function given some set of optimization
+parameters.  Mathematically, Rosenbrock's function is:
+
+\f[f(x) = 100(x_2 - x_{1}^2)^2 + (1 - x_1)^2 \f]
+
+The following code will compute the value of <em>f(x)</em>.
+
+First, some error checking and manipulation of the optimization
+parameters, <em>x</em>, are done.
+
+<table>
+<tr><td>
+\code
+void rosen(int ndim, const ColumnVector& x, double& fx, int& result)
+{
+  double f1, f2, x1, x2;
+
+  if (ndim != 2)
+    exit (1);
+
+  x1 = x(1);
+  x2 = x(2);
+  f1 = (x2 - x1 * x1);
+  f2 = 1. - x1;
+\endcode
+</table>
+
+Then the function value, <em>fx</em>, is computed, and the variable,
+<em>result</em>, is set to indicate that a function evaluation was
+performed.
+  
+<table>
+<tr><td>
+\code
+  fx  = 100.* f1*f1 + f2*f2;
+  result = NLPFunction;
+}
+\endcode
+</table>
+
+On a more general note, this subroutine could serve as a wrapper to a
+C or Fortran subroutine.  Similarly, it could make a system call to a
+completely independent executable.  As long as the values of
+<em>fx</em> and <em>result</em> are set when all is said and done, it
+does not matter how the function value is computed.
+
+Now that we have all of the code necessary to set up and solve
+Rosenbrock's function, give it a try!
+
+\section run1 Building and Running the Example
+Building your executable should be fairly straightforward.  Below is
+the recommended set of steps to follow.
+<ol>
+      <li> Determine which defines you need.  If the C++ compiler you
+	   are using supports the ANSI standard style of C header
+	   files, you will need
+           \verbatim
+		-DHAVE_STD
+           \endverbatim
+	   If the C++ compiler you are using supports namespaces, you
+	   will need
+           \verbatim
+		-DHAVE_NAMESPACES
+           \endverbatim
+	   If you are using the parallel version of OPT++, you will
+	   need
+           \verbatim
+		-DWITH_MPI
+           \endverbatim
+      <li> Determine the location of the header files.  If you did a
+	   "make install", they will be located in the "include"
+	   subdirectory of the directory in which OPT++ is installed.
+	   If that directory is not one your compiler normally checks,
+	   you will need
+           \verbatim
+		-IOPT++_install_directory/include
+           \endverbatim
+	   If you did not do a "make install", the header files will
+	   almost certainly be in a directory not checked by your
+	   compiler.  Thus, you will need
+           \verbatim
+		-IOPT++_top_directory/include -IOPT++_top_directory/newmat11
+           \endverbatim
+	<li> Determine the location of the libraries.  If you did a
+	   "make install", they will be located in the "lib"
+	   subdirectory of the directory in which OPT++ is installed.
+	   If that directory is not one your compiler normally checks,
+	   you will need
+           \verbatim
+		-LOPT++_install_directory/lib
+           \endverbatim
+	   If you did not do a "make install", the libraries will
+	   almost certainly be in a directory not checked by your
+	   compiler.  Thus, you will need
+           \verbatim
+		-LOPT++_top_directory/lib/.libs
+           \endverbatim
+	<li> If you configured OPT++ for the default behavior of using
+	   the BLAS and/or you configure OPT++ to use NPSOL, you will
+	   need the appropriate Fortran libraries for linking.  The
+	   easiest way to get these is to look in the Makefile for the
+	   value of FLIBS.
+	<li> If all is right in the world, the following format for your
+	   compilation command should work:
+           \verbatim
+		$CXX <defines> <includes> example1.C tstfcn.C <lib \
+		directory> -lopt -lnewmat -l$BLAS_LIB $FLIBS 
+           \endverbatim
+	   $CXX is the C++ compiler you are using.  <defines> and
+	   <includes> are the flags determined in steps 1-2.  example1.C
+	   is your main routine, and tstfcn.C contains your function
+	   evaluations.  (Note: If you have put them both in one file,
+	   you need only list that single file here.)  <lib_directory
+	   was determined in step 3.  -lopt and -lnewmat are the two
+	   OPT++ libraries.  $BLAS_LIB is the BLAS library you are
+	   using, and $FLIBS is the list of Fortran libraries
+	   determined in step 4.
+</ol>
+You should now be able to run the executable (type "./example1").  You
+can compare the results, found in example1.out, to <a
+href="example1_out.html">our results</a>.  There may be slight
+differences due to operating system, compiler, etc., but the results
+should very nearly match.
+
+<p> Next Example: \ref example2 | Back to \ref SetUp </p>
+
+Last revised <em> April 27, 2007</em>
+
+
+*/

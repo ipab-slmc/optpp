@@ -1,0 +1,51 @@
+/** \page tstcg Conjugate Gradient Method
+
+\code
+   #include <fstream>
+
+   #include "OptCG.h"
+   #include "NLF.h"
+   #include "tstfcn.h"
+ 
+   using NEWMAT::ColumnVector;
+   using namespace OPTPP;
+
+   void update_model(int, int, ColumnVector) {}
+
+   int main ()
+   {
+     int n = 2;
+  
+     static char *status_file = {"tstcg.out"};
+
+     //  Create a Nonlinear problem object
+     NLF1 nlp(n,rosen,init_rosen);
+  
+     //  Build a CG object and optimize 
+     OptCG objfcn(&nlp);   
+
+     objfcn.setUpdateModel(update_model);
+     if (!objfcn.setOutputFile(status_file, 0))
+       cerr << "main: output file open failed" << endl;
+
+     // Set gradient tolerance equal to 1.0e-6
+     objfcn.setGradTol(1.e-6);
+
+     objfcn.optimize();
+    
+     objfcn.printStatus("Solution from CG: Fcn not Expensive");
+
+     objfcn.cleanup();
+
+   }
+\endcode
+
+<a href="tstcg_out.html"> View the output of a conjugate gradient method </a>
+
+<p> <a href="tstqnewton.html"> Next Section: Quasi-Newton method with 
+	trust-region </a> |  <a href="UnconstrainedProblems.html">
+	Back to Unconstrained minimization </a> </p> 
+
+Last revised <em> September 14, 2006 </em>.
+
+*/

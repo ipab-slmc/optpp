@@ -1,0 +1,63 @@
+/** \page tstbcnips Finite-difference nonlinear interior-point method with line-search
+ 
+Example of using finite-difference NIPS algorithm on a NLF1.
+\code
+   #include <iostream>
+   #include <fstream>
+
+   #include "NLF.h"
+   #include "Constraint.h"
+   #include "BoundConstraint.h"
+   #include "CompoundConstraint.h"
+   #include "OptFDNIPS.h"
+   #include "tstfcn.h"
+
+   using NEWMAT::ColumnVector;
+   using namespace OPTPP;
+
+   void update_model(int, int, ColumnVector) {}
+
+   int main ()
+   {
+     int ndim =  2;
+     ColumnVector lower(ndim), upper(ndim);
+
+     //  Create a bound constraint 
+     lower    = -2.0; upper    =  2.0;
+     Constraint bc = new BoundConstraint(ndim, lower, upper);
+     CompoundConstraint* cc = new CompoundConstraint(bc);
+
+     static char *status_file = {"tstfdnips.out"};
+
+     //  Create a constrained nonlinear problem object
+     NLF1 nips(ndim,rosen, init_rosen, cc);
+
+     //  Build a finite-difference NIPS object and optimize
+     OptFDNIPS objfcn(&nips, update_model);
+
+     objfcn.setOutputFile(status_file, 0);
+
+     // Set convergence tolerance 
+     objfcn.setFcnTol(1.0e-06);
+
+     //  Set maximum allowable iterations for FDNIPS algorithm 
+     objfcn.setMaxIter(150);
+
+     //  Use a backtracking linesearch method to determine acceptable step 
+     objfcn.setSearchStrategy(LineSearch);
+
+     // Use the Argaez-Tapia merit function as a globalization strategy
+     objfcn.setMeritFcn(ArgaezTapia);
+
+     objfcn.optimize();
+     objfcn.printStatus("Solution from fdnips");
+     objfcn.cleanup();
+
+   }
+\endcode
+<p> <a href="ConstrainedProblems.html"> Next Section: Constrained minimization
+</a> |  <a href="Classification.html"> Back to Solvers Page</a> </p> 
+
+Last revised <em> September 14, 2006 </em> .
+
+*/

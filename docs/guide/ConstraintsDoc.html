@@ -1,0 +1,90 @@
+/** \page ConstraintsDoc  How to create constrained objects
+
+<ul>
+	<LI> \ref BoundConstraints
+	<LI> \ref LinearConstraints
+	<LI> \ref NonLinearConstraints
+	<LI> \ref CompoundConstraintsDoc
+</UL>
+<p>
+a constraint has finite lower and upper bounds, OPT++ treats it as two
+separate constraints.  In the computation of the residuals and gradients
+constraints with finite lower bounds appear first followed by those with
+finte upper bounds. Consequently, in the optimization summary, you will
+see the constraint count is double the original number of constraints.  
+</p>
+
+Now, we are ready to build an constrained nonlinear program.
+
+Let's consider the two-dimensional Rosenbrock problem with bound constraints.
+
+<em> minimize   </em> \f[100(x_2 - x_{1}^2)^2 + (1 - x_1)^2 \f]
+<em> subject to </em>  \f[ -2.0 \le x \le 2.0\f] 
+
+Step 1: Build your compound constraint.
+\code
+   int ndim =  2;
+   ColumnVector lower(ndim), upper(ndim);
+   lower    = -2.0;
+   upper    =  2.0;
+
+   Constraint bc = new BoundConstraint(ndim, lower, upper);
+   CompoundConstraint* rosen_constraints = new CompoundConstraint(bc);
+\endcode
+
+Step 2: Create a nonlinear function with analytic derivatives. 
+<ul>
+	<li> First, write a function which initializes <em>x<sub>0</sub></em>. 
+\code
+   void init_rosen (int ndim, ColumnVector& x)
+   {
+      if (ndim != 2)
+      {
+	 exit (1);
+      }
+      x(1) = -1.2;
+      x(2) =  1.0;
+   }
+\endcode
+</li>
+<li> Next, write a function that evaluates the Rosenbrock function 
+and gradient.
+\code
+   void rosen(int mode, int n, const ColumnVector& x, double& fx, 
+              ColumnVector& g, int& result)
+   { // Rosenbrock's function
+      double f1, f2, x1, x2;
+    
+      if (n != 2) return;
+
+      x1 = x(1);
+      x2 = x(2);
+      f1 = (x2 - x1 * x1);
+      f2 = 1. - x1;
+
+      if (mode & NLPFunction) {
+          fx  = 100.* f1*f1 + f2*f2;
+      }
+      if (mode & NLPGradient) {
+         g(1) = -400.*f1*x1 - 2.*f2; 
+         g(2) = 200.*f1;
+      }
+      result = NLPFunction & NLPGradient;
+   }
+\endcode
+</li>
+</ul>
+
+Step 3: Create a constrained nonlinear problem with analytic derivatives 
+\code
+   NLF1 nips(n,rosen,init_rosen,rosen_constraints);
+\endcode
+
+Voila! You're done.
+<p> <a href="ExamplesDoc.html">Next Section: Examples of test fragments</a> |  
+<a href="index.html">Back to Main Page</a> </p> 
+
+*/
+
+
+

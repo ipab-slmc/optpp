@@ -1,0 +1,110 @@
+
+/** \page xml2 XML File 2:  Hock-Schittkowski Problem Number 14 (subroutine)
+
+The XML file for OPT++ can be thought of as being broken down into
+blocks of XML.  Each block must be "opened" and "closed".  The main
+block is the OPT block.  It has two sub-blocks, ProblemSetup and the
+algorithm block.  Each of those has sub-blocks which contain the
+detailed information for OPT++.
+
+The ProblemSetup block has four sub-blocks.  The first is the function
+type.  In this case, it is "Library" since we are using the subroutine
+interface.  You can see the data values for the Hock-Schittkowski
+example.
+
+<table>
+<tr><td>
+\code
+<OPT>
+  <ProblemSetup>
+    <Library Second="false" FEval="hs14" First="true" LibName="testexample.so" Init="init_hs14"/>
+\endcode
+</table>
+
+The second sub-block is the VariableClass block.  It contains an array
+of the optimization variables.  Recall that for Rosenbrock's function,
+there are no bounds on the variables, so the "lower" and "upper"
+values consist only of empty quotes.
+
+<table>
+<tr><td>
+\code
+    <VariableClass numVariables="2">
+      <Array name="VariableList">
+        <Variables initVal="0.0" lower="" upper="" theName="OPT_x1"/>
+        <Variables initVal="0.0" lower="" upper="" theName="OPT_x2"/>
+      </Array>
+    </VariableClass>
+\endcode
+</table>
+
+The third sub-block is LConstraintClass.  The syntax may seem slightly
+excessive, but it if really just an array of LinearConstraint blocks,
+each of which is essentially a list of the variables and their
+coefficients.  Each LinearConstraint also contains information about
+the comparison operator (which can be >= or =) and the right-hand
+side.
+
+<table>
+<tr><td>
+\code
+    <LConstraintClass numLConstraints="1">
+      <Array name="LinearConstraint">
+        <LinearConstraint operator="=" constraintName="linear1" rhs="-1.0">
+          <Table name="Variables">
+            <Entry Variable="OPT_x1" Coefficient="1.0"/>
+            <Entry Variable="OPT_x2" Coefficient="-2.0"/>
+          </Table>
+        </LinearConstraint>
+      </Array>
+    </LConstraintClass>
+\endcode
+</table>
+
+The third sub-block is NLConstraintClass.  This is an array of
+NonLinearConstraint blocks, each of which contains the description of
+one of the nonlinear constraints.  This includes information about the
+comparison operator (which can be >= or =) and the right-hand side.
+The desription of the constraint itself is of the same form as that
+for the function.
+
+<table>
+<tr><td>
+\code
+    <NLConstraintClass numNLConstraints="1">
+      <Array name="NonLinearConstraints">
+        <NonLinearConstraint operator=">=" theName="nonlinear1" rhs="0.0">
+          <Library Second="false" FEval="ineq_hs14" First="true" LibName="testexample.so" Init="init_hs14"/>
+        </NonLinearConstraint>
+      </Array>
+    </NLConstraintClass>
+  </ProblemSetup>
+\endcode
+</table>
+
+The algorithm block is named according to the algorithm that is being
+used.  In this case, it is NIPS.  (The other possibilities are CG,
+Newton, and PDS.)  The algorithm block has three sub-blocks that
+contain the algorithmic parameters.  There are the BasicOptions, the
+AdvancedOptions, and the algorithm-specific parameters.  The
+BasicOptions and AdvancedOptions are the same for all of the
+algorithms.  The algorithm-specific parameters vary.  You can see what
+they are for the different algorithms by looking at the examples in
+the OPT++/tests/xml directory.
+
+<table>
+<tr><td>
+\code
+  <NIPS>
+    <BasicOptions maxFeval="10000" outFile="tstHock14xml.out" maxIter="100" Debug="false"/>
+    <AdvancedOptions maxStep="1.e3" conTol="1.49e-08" stepTol="1.49e-08" fcnTol="1.49e-08" gradTol="6.05e-06" minStep="1.49e-08"/>
+    <argaezTapia lenBound="0.99995" centParm="0.2" maxBack="5"/>
+  </NIPS>
+</OPT>
+\endcode
+</table>
+
+<p> Previous Example:  \ref xml1 | Next Example:  \ref xml3 | Back to
+\ref GUI_XMLDoc </p>
+
+*/

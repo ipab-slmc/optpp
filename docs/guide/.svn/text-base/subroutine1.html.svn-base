@@ -1,0 +1,169 @@
+
+/** \page subroutine1 Subroutine Example 1:  Rosenbrock's Function
+
+This example is intended to demonstrate how to set up and solve a very
+simple problem using the subroutine interface.  We will show you how
+to solve Rosenbrock's function in two dimensions, i.e.,
+
+<em> minimize </em> \f[100(x_2 - x_{1}^2)^2 + (1 - x_1)^2 \f]
+
+For this example, we will assume that there are no analytic
+derivatives and no constraints.  We will also assume that the
+subroutines that initialize and evaluate the function are in the same
+file.  We step through the specifics below.
+
+<ul>
+  <li> \ref usercode <br>
+  <li> \ref buildandrun <br>
+</ul>
+
+\section usercode User-Provided Subroutines
+
+This section contains examples of the user-defined functions that are
+required.  The first performs the initialization of the problem.  The
+second performs the evaluation of the function.
+
+First, include the necessary header files.  In this case, we need
+iostream so we can print error messages and the OPT++ header file,
+NLP.h, for some definitions.  Also, because we are going to great a
+dynamically loadable library, we need to surround all of our code by
+an extern "C" statement.
+
+<table>
+<tr><td>
+\code
+#include <iostream>
+#include "NLP.h"
+
+extern "C" {
+\endcode
+</table>
+
+The subroutine that initializes the problem should perform any
+one-time tasks that are needed for the problem.  One part of that is
+checking for error conditions in the setup.  In this case, the
+dimension, <em>ndim</em>, can only take on a value of 2.  Using "exit"
+is not the ideal way to deal with error conditions, but it serves well
+as an example.
+
+<table>
+<tr><td>
+\code
+void init_rosen(int ndim, ColumnVector& x)
+{
+  if (ndim != 2) {
+    cerr << "Number of variables for Rosenbrock's function should be 2."
+	 << "  The number of variables given is " << ndim << endl;
+    exit (1);
+  } //end if
+} //end init_rosen
+\endcode
+</table>
+
+The other required subroutine will evaluate the function.  In this
+problem, we are trying to find the minimum value of Rosenbrock's
+function, so it is necessary to write the code that compute the value
+of that function given some set of optimization parameters.
+Mathematically, Rosenbrock's function is:
+
+\f[f(x) = 100(x_2 - x_{1}^2)^2 + (1 - x_1)^2 \f]
+
+The following code will compute the value of <em>f(x)</em>.
+
+First, some manipulation of the optimization parameters, <em>x</em>,
+is done.
+
+<table>
+<tr><td>
+\code
+void rosen0(int ndim, const ColumnVector& x, double& fx, int& result)
+{
+  double f1, f2, x1, x2;
+
+  x1 = x(1);
+  x2 = x(2);
+  f1 = (x2 - x1 * x1);
+  f2 = 1. - x1;
+\endcode
+</table>
+
+Then the function value, <em>fx</em>, is computed, and the variable,
+<em>result</em>, is set to indicate that a function evaluation was
+performed.
+  
+<table>
+<tr><td>
+\code
+  fx  = 100.* f1*f1 + f2*f2;
+  result = NLPFunction;
+} //end rosen0
+} //end extern "C"
+\endcode
+</table>
+
+Now that we have all of the code necessary to initialize and evaluate
+Rosenbrock's function, give it a try!
+
+\section buildandrun Building and Running the Example
+
+If you want to try running this example, the following steps should do
+the trick.
+
+<ol>
+  <li> cd into your favorite directory.
+  <li> Write the code described above.  You can organize it however
+  you like, but we recommend putting both subroutines in the same
+  file (e.g., testexample.C).
+  <li> Copy the Makefile from the tests/xml directory into the
+  directory where your code resides.  (WARNING: Since the Makefile
+  contains platform-dependent information, it should be one that was
+  configured for the platform on which you are doing this example.)
+  <li> Edit the Makefile by replacing the files listed in the existing
+  SOURCES line with your file.  For example,
+        \verbatim
+           SOURCES = testexample.C
+        \endverbatim
+  <li> Type "make".  This step will create the library,
+	testexample.so.
+  <li> Set the LD_LIBRARY_PATH environment variable to the directory
+	where your library resides.  For us, the directory was
+	/home/pdhough/TooMuchFun, so:
+	\verbatim
+	   for csh or tcsh, <br>
+	   setenv LD_LIBRARY_PATH /home/pdhough/TooMuchFun
+	\endverbatim
+	OR
+	\verbatim
+	   for bash, <br>
+	   set LD_LIBRARY_PATH=/home/pdhough/TooMuchFun
+	   export LD_LIBRARY_PATH
+	\endverbatim
+  <li> Create the XML input file for OPT++.  The initialization
+	subroutine is init_rosen, the function subroutine is rosen0,
+	and the library is testexample.so.  The number or variables is
+	2, and there are no derivatives	or constraints.  If you want
+	to duplicate our results, we used an initial guess of -1.2 for
+	the first variable and 1.0 for the second.  We used the PDS
+	algorithm with the default values for all of the parameters
+	except for the maximum number of function evaluations, which
+	we set to 10000.  We recommend putting the XML file in the
+	same directory as your code so that you have all of your
+	problem information in one place.
+  <li> If you have set up OPT++ and the various environment variables
+	as described in the documentations, you should now be able to
+	run the problem by issuing the following command:
+        \verbatim
+           ./testexample
+        \endverbatim
+
+	If you like, you can compare your output to
+	<a href="subroutine1_out.html"> our results</a>.  There may be
+	slight differences, but if you used the same input that we
+	did, the results should look pretty much the same.
+</ol>
+
+<p> Next Example: \ref subroutine2 | Back to \ref GUI_XMLDoc </p>
+
+Last revised <em> July 25, 2006</em>
+
+*/

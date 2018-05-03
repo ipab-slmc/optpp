@@ -1,0 +1,81 @@
+/** \page gensetGuide-format Choosing a Generating Set for OptGSS 
+
+A generating set for <b>R<sup>n</sup></b> is a set of vectors that 
+can generate any point in <b>R<sup>n</sup></b> by linear combinations with 
+positive coefficients.
+<br>
+Currently, OPT++ contains three Generating Set Search options for OptGSS.
+The first two can be used for n-dimensional problems, whereas
+the third is applicable only for two-dimensional problems.
+
+<hr>
+<p>
+
+<b>GenSetStd:</b>
+
+<table cellpadding="10"><tr>
+<td>
+<img src="../images/gensetStd.gif">
+<td valign="top">
+The standard generating set has 2<b>n</b> elements and
+consists of the columns of the identity matrix and its negative. <br>
+<center>{I, -I}</center>
+The standard generating set gives rise to the well-known compass-search 
+algorithm, which searches both sides of every Cartesian direction. 
+</table>
+<p>
+ 
+<b>GenSetMin:</b>
+<table cellpadding="10"><tr>
+<td>
+<img src="../images/gensetMin.gif">
+<td valign="top">
+A generating set for <b>R<sup>n</sup></b> must
+contain at least <b>n</b>+1 elements. The standard minimal 
+generating set consists of the columns of the identity matrix plus 
+the vector with all entries equal to -1.
+<br>
+<center>{I, -1}</center>
+The standard minimal generating set is useful for problems with 
+expensive function evaluations.
+</table>
+<p>
+
+<b>GenSetBox2d:</b>
+<table cellspacing="2" cellpadding="10"><tr>
+<td>
+<img src="../images/gensetBox.gif">
+<td valign="top">
+The Box generating set augments the standard generating set
+with the corners of a <b>n</b> dimensional hypercube (or "box").
+In OPT++, the Box generating set has been implemented for <b>n</b>=2,
+where the corner vectors are <br>
+<center>{(1,1), (-1,1), (-1,-1), (1,-1)}.</center>
+This generating set can be used instead of the standard set for
+two dimensional problems with inexpensive function evaluations.
+The additional directions can significantly improve the algorithm's
+convergence rate.
+</table>
+
+<hr>
+<p>
+<b>References:</b> 
+<br>
+
+<ol>
+<li> T. Kolda, R. Lewis, V. Torczon.
+<i>Optimization by Direct Search: New Perspectives on Some Classical and Modern Methods.</i>
+ SIAM REVIEW Vol. 45, No.3, pp.385-482. 
+<p>
+<li>A. G. Buckley and H. Ma, 
+<i>A Derivative-Free Algorithm for Parallel and Sequential Optimization,</i> 
+Technical Report, Computer Science Department, University of Victoria, BC, Canada, 1994. 
+</li>
+</ol>
+
+<p> <a href="tstgss.html">Next Section: Optimization Methods </a> |
+<a href="index.html">Back to Main Page</a> </p> 
+ 
+Last revised <em> July 13, 2006 </em> 
+
+*/

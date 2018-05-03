@@ -1,0 +1,51 @@
+/** \page MethodsDoc Optimization Methods 
+
+This section contains recommendations for optimization algorithms based
+on problem characteristics. 
+
+\section Unconstrained Unconstrained Optimization Methods
+
+<ol type="A">
+	<LI>No Derivative Information or Noisy Function Evaluations
+<UL>
+    <LI> <a href ="classOPTPP_1_1OptPDS.html"> Parallel Direct Search (PDS) Method </a>
+    <LI> <a href ="classOPTPP_1_1OptGSS.html"> Generating Set Search (GSS) Method </a>
+</UL>
+
+<Li> Derivative Information Available
+<UL>
+    <LI> <a href ="classOPTPP_1_1OptCGLike.html"> Conjugate Gradient Method </a>
+    <LI> <a href ="classOPTPP_1_1OptLBFGSLike.html"> Limited-Memory BFGS Method</a>
+    <LI> <a href ="classOPTPP_1_1OptNewtonLike.html"> Newton's Method </a>
+</UL>
+</OL>
+
+\section Bound_Constraints Bound-Constrained Optimization Methods 
+<UL>
+    <LI> <a href ="classOPTPP_1_1OptBaNewton.html"> Barrier Newton Method </a>
+    <LI> <a href ="classOPTPP_1_1OptBCEllipsoid.html"> Bound Constrained Ellipsoid 
+	    Method</a>
+    <LI> <a href ="classOPTPP_1_1OptBCNewtonLike.html"> Bound Constrained Newton</a>
+    <LI> <a href ="classOPTPP_1_1OptNIPSLike.html"> Nonlinear Interior-Point Method</a>
+    <LI> <a href ="classOPTPP_1_1OptNPSOL.html"> NPSOL wrapper </a>
+    <LI> <a href ="classOPTPP_1_1OptPDS.html"> Parallel Direct Search (PDS) Method </a>
+</UL>
+
+
+\section GeneralConstraints Generally Constrained Optimization Methods
+<UL>
+    <LI> <a href ="classOPTPP_1_1OptNIPSLike.html"> Nonlinear Interior-Point Method</a>
+    <LI> <a href ="classOPTPP_1_1OptNPSOL.html"> NPSOL wrapper </a>
+</UL>
+
+\section LeastSquares Optimization Methods using Gauss-Newton approximations 
+<UL>
+    <LI> <a href ="classOPTPP_1_1OptDHNIPS.html"> Disaggregated Hessian Nonlinear Interior-Point Method</a>
+    <LI> <a href ="classOPTPP_1_1OptNewtonLike.html"> Newton's method </a>
+</UL>
+
+<p> Previous Section:  \ref Classification | Next Section:  \ref FAQS
+| Back to the <a href="index.html"> Main Page</a> </p>
+
+*/
+

@@ -1,0 +1,56 @@
+/** \page BoundConstrainedProblems  Bound-constrained minimization 
+
+In this section, we describe the framework for a bound-constrained
+minimization problem.  
+<UL>
+<li> \ref  BoundConstraints
+<li> \ref  BCProblem
+<li> \ref  BCFragments
+</UL>
+
+\section BCProblem Creating a bound-constrained nonlinear problem 
+Once you have mastered bound-constrained objects and setting up the objective
+function, it is a simple 2-step process to build a bound-constrained 
+nonlinear problem. 
+
+Let's consider the two-dimensional Rosenbrock problem with bounds on
+the variables: 
+
+<em> minimize   </em> \f[100(x_2 - x_{1}^2)^2 + (1 - x_1)^2 \f]
+<em> subject to </em>  \f[ -2.0 \le x_1 \le 2.0 \f] 
+<em>  </em>  \f[ -2.0 \le x_2 \le 2.0 \f] 
+
+Step 1: Build your bound constraint.
+\code
+   int ndim =  2;
+   ColumnVector lower(ndim), upper(ndim);
+   lower    = -2.0; upper    =  2.0;
+
+   Constraint bc = new BoundConstraint(ndim, lower, upper);
+\endcode
+
+Step 2: Create a constrained NLF1 object.
+\code
+   NLF1 rosen_problem(n,rosen,init_rosen,&bc);
+\endcode
+
+\section BCFragments  Specifying the optimization method 
+OPT++ contains no less than six solvers for bound-constrained optimization
+problems.  To name a few, there are implementations of Newton's method, 
+barrier Newton's method, interior-point methods, and direct search algorithms.
+We provide examples of solving the bound-constrained Rosenbrock problem 
+with an active set strategy and a nonlinear interior-point method. 
+<ol>
+	<li> \ref tstbcqnewton
+	<li> \ref tstbcnips
+</ol>
+
+<p> <a href="ConstrainedProblems.html">
+	Next Section: Constrained minimization
+</a> |  <a href="Classification.html">Back to Solvers Page</a> </p> 
+
+Last revised <em> July 13, 2006</em>
+*/
+
+
+

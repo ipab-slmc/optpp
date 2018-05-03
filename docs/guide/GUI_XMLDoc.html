@@ -1,0 +1,360 @@
+
+/** \page GUI_XMLDoc Using the (beta) GUI/XML Interface
+
+The following sections contain instructions for using the GUI/XML
+interface to OPT++.  This includes starting the GUI, the code you will
+have to write, and the form of the XML files.  The GUI/XML interface
+provides the major functionality of OPT++ but does not yet provide all
+of the detailed functionality allowed when setting up a problem as
+described in \ref SetUp.  We will gradually add this functionality as
+we figure out the best way to do so.  Please note that the GUI and XML
+code has only been confirmed to work on Linux machines using GNU
+tools.  We expect other ports to be available in the future.  The
+following topics are covered on this page.
+
+<ul>
+  <li> \ref before <br>
+  <li> \ref start <br>
+  <li> \ref problem <br>
+  <li> \ref algorithm <br>
+  <li> \ref code <br>
+     <ul>
+        <li> <a href="#subroutine"> Subroutine Interface</a> <br>
+	<li> <a href="#application"> Application Interface</a> <br>
+     </ul>
+  <li> \ref xml <br>
+</ul>
+
+\section before Before You Start
+
+In order to use the GUI/XML interface, you must first build OPT++ to
+use it.  In particular, you should specify --with-xml at configure
+time.  See the <a href="InstallDoc.html#gui"> Configuring for use with
+the new (beta) GUI/XML Interface</a> section of the
+<a href="InstallDoc.html"> Installation Documentation</a> for more
+details.  In addition, you need Java 1.4 on your system.  If it is not
+already installed, you can download a version for Linux at the
+<a href="http://www.blackdown.org"> Blackdown web site</a>.
+
+Once Java is installed and OPT++ has been built appropriately, you now
+need to set a couple of environment variables.  The first is the
+MAUI_HOME variable, and the second is the PATH variable.  They should
+be set as follows:
+
+   \verbatim
+      for csh or tcsh, 
+      setenv MAUI_HOME {path to OPT++}/Maui 
+      set path=($path {path to OPT++}/Maui/Java/bin {path to OPT++}/bin)
+   \endverbatim
+   OR
+   \verbatim
+      for bash, 
+      set MAUI_HOME={path to OPT++}/Maui 
+      set path=($path {path to OPT++}/Maui/Java/bin {path to OPT++}/bin)
+      export path
+   \endverbatim
+
+If you would like to have these environment variables automatically
+set for you each time you log in and/or start a new shell, place these
+commands in your $HOME/.cshrc file or your $HOME/.bashrc file,
+respectively.
+
+The rest of this page describes how to set up an XML input file (both
+with and without the GUI) and how to set up any code you need to
+provide.  Once you have completed those tasks, you need only type:
+
+   \verbatim
+      opt++.e {name of XML file}
+   \endverbatim
+   OR
+   \verbatim
+      mpirun -np {number of procs} opt++.e {name of XML file}, <br>
+      if you are using MPI.
+   \endverbatim
+
+
+If everything has been set up correctly, this command will execute the
+optimization algorithm you chose on the problem you set up.
+
+\section start Starting the GUI
+
+Once your environment is properly set up, as described in the
+<a href="#before"> Before You Start</a> section, starting up the GUI
+should be straightforward.  Simply execute the following command:
+
+   \verbatim
+      Maui.e {path to OPT++}/Opt.xml
+   \endverbatim
+
+You will get the following window: <br>
+
+<IMG src="../images/maui_startup.png" ALIGN=center><BR>
+
+The first thing you may want to do is configure the appearance of the
+GUI.  You can do this by clicking on the "Configure Maui" button.  You
+will be given the opportunity to set a number of features, as shown
+below.  Note that you can save the configuration for future use by
+clicking the "Save Config" button. <br>
+
+<IMG src="../images/maui_config.png" ALIGN=center><BR>
+
+After you have configured the appearance to your liking, click the
+"Start New Session" button in order to bring up the OPT++ interface.
+The first time you do this, you will see the following error:
+
+<IMG src="../images/maui_noaction.png" ALIGN=center><BR>
+
+In order to correct this, click the "Browse" button.  You will get a
+file menu which you should follow to {path to OPT++}/lib.  Then select
+the file optMaui.jar, as show below.  Once you've selected this file,
+you will be asked if you want to save it to your classpath.  Click the
+"Yes" button to avoid the above error in the future.
+
+<IMG src="../images/maui_classpath.png" ALIGN=center><BR>
+
+Once you have complete these steps, you should now see the OPT++
+Welcome Panel, as shown below.  You are now ready to set up you
+optimization problem.
+
+<IMG src="../images/maui_opt++.png" ALIGN=center><BR>
+
+Before we move on, we first make some general comments regarding
+things you will see on the GUI.  The first is that some if the entries
+are in blue font while others are in black font.  Those in blue are
+required fields.  Those in black will have default values set if you
+choose to leave them blank.  All of the field labels have Tool Tips
+associated with them.  These tips are intended to tell you what type
+of entry should go in that field and what range of values is
+appropriate.  In addition, at the end of each field, you will see Help
+buttons.  These are intended to provide you with some additional
+guidance on the meaning of the field and on how it should be set.
+Finally, there is a "Load File" and a "Save Input for OPT++" button at
+the top of the GUI.  These allow you to load existing XML files and to
+save XML files, respectively.  The Load action currently cannot load
+any files not generated by the GUI, though this will change in the
+future.  The Save action generates error messages if any of the GUI
+input is incorrect, but you will be allowed to save the file anyway at
+your own risk.
+
+\section problem Setting up the Problem
+
+To set up your optimization problem, click on the "Problem Setup"
+tab.  The default problem interface is the subroutine interface.  In
+order to use this interface, you must provide the name of an
+initialization subroutine, the name of a function evaluation routine,
+and the name of the library that contains these subroutines.  You must
+also specify whether or not you will be providing code for derivative
+evaluations.  The initialization subroutine should include code for
+any one-time tasks to be done before the optimization process starts.
+The function evaluation routine should compute the value of the
+function given the current iterate.  If you have specified that you
+will be providing derivative information, the function evaluation
+subroutine must also provide the code that performs the derivative
+computations.  Finally, the library that contains these subroutines
+must be one that is dynamically linked.  For more details on the code
+you must provide and how to compile it, please see the 
+<a href="#subroutine"> Subroutine Interface Code</a> section.  The
+"Problem Setup" panel with example entries for a subroutine-based
+problem is shown below.
+
+<IMG src="../images/maui_subroutine.png" ALIGN=center><BR>
+
+The other type of problem interface is the application interface.  For
+this interface, you must provide the name of the executable that will
+be called for the function evaluation.  This may be a compiled binary
+executable or a script that executes a sequence of steps that may also
+include such things as pre- and post-processing.  The final result
+must a file named "fvalue.out" (or "convalue.out" for a nonlinear
+constraint evaluation), which contains the function value, printed to
+whatever degree of precision you desire.  (Note:  Do not assume that
+the default precision for printf, fout, etc. is sufficient.  You might
+be surprised!)  In addition to the name of the executable, you must
+also provide the name, including the full path, of the directory that
+contains all of your application or model information.  This includes
+not only the executable named above, but any input files such as mesh
+files.  The final piece of information required is the name of the
+primary input deck for your application.  A templated form of this
+file must reside in a "makecopies" subdirectory of the application
+directory named above.  Templated implies that the file has a ".Tmplt"
+extension, and the quantities you want to vary have been replaced by
+unique keywords.  For more details on how to set up the files and
+directories required, please see the  <a href="#application">
+Application Interface Code</a> section.  The "Problem Setup" panel for
+an application-based problem is shown below.
+
+<IMG src="../images/maui_application.png" ALIGN=center><BR>
+
+For both the subroutine and the application interfaces, you are
+required to provide information about the variables and the
+constraints on the tabbed panels on the lower half of the "Problem
+Setup" panel.  You must enter the number of variables and constraints
+where requested.  To add a variable/constraint, click on the "Add"
+button; to edit, double click on the label of the variable/constraint
+you wish to edit; to remove a variable/constraint, highlight its label
+and click on the "Remove" button.  For each variable, you must provide
+a label.  If you are using the application interface, this label must
+be the same as the corresponding keyword in the templated application
+input deck.  You may provide an initial value or retain the default of
+zero.  You may also provide bounds on the variable if there are any.
+The linear constraints are linear constraints on the control
+(optimization) variables only.  Linear constraints and bounds on state
+variables are treated as nonlinear constraints.  The label for the
+linear constraints can be anything you like, though we recommend that
+it be descriptive of the phenomenon it is describing.  You will also
+need to add the list of variables and corresponding coefficients in
+the linear expression (only for those variables with non-zero
+coefficients).  Choose the comparison operator and provide the
+right-hand side if it is non-zero.  The nonlinear constraint editor
+looks very similar to the "Problem Setup" panel, so we will not
+discuss it here.  Below is a figure that shows the variable and linear
+constraint editors with example entries.
+
+<IMG src="../images/maui_arrays.png" ALIGN=center><BR>
+
+Now that your problem description is complete, it is now time to
+choose an algorithm.
+
+\section algorithm Setting up the Algorithm
+
+To set up the algorithm you will use to solve your optimization
+problem, click on the "Optimization Algorithm" Panel.  As you can see
+in the figure below, there is a choice of algorithms.  There is a
+nonlinear interior-point method (the default), a parallel direct
+search method, and the classic Newton and CG methods.  There are a few
+basic algorithmic parameters that are associated with all algorithms.
+The meaning of these parameters is fairly straightforward.  In
+addition, most of the algorithms have some algorithm-specific
+parameters.  All parameters are set to default values that should be
+fairly reasonable for many problems.  Where appropriate, the help
+messages provide some guidance for how to set these parameters if you
+choose to change their values.
+
+<IMG src="../images/maui_nips.png">
+
+In addition the basic parameters, there are some advanced algorithmic
+parameters that are associated with all of the algorithms, as shown
+below.  These are more complex parameters whose meanings are not as
+straightforward as those of the basic parameters.  They are each
+assigned default values, and guidance for setting their values is
+provided in the help messages where appropriate.
+
+<IMG src="../images/maui_advanced.png" ALIGN=center> <br>
+
+Once you have set up the problem, chosen the algorithm, and set any
+desired parameters, you are ready to save the information from the GUI
+to an XML file, {filename}.xml, and solve the optimization problem by
+executing the following command:
+
+   \verbatim
+      opt++.e {filename}.xml
+   \endverbatim
+   OR
+   \verbatim
+      mpirun -np {number of procs} opt++.e {name of XML file}, <br>
+      if you are using MPI.
+   \endverbatim
+
+\section code Code You Need to Provide
+
+<a name="subroutine"><em> Subroutine Interface </em></a>
+
+The subroutine interface is quite similar to the problem set-up
+defined in the <a href="SetUp.html"> Setting up and Solving an
+Optimization Problem</a> section.  There are a few exceptions,
+however.  First, you do not need to provide a main routine.  Next, the
+initialization of the optimization variables does not need to be done
+in the initialization subroutine.  Both of these are now done for you,
+based on the information you provide in the GUI/XML interface.
+Finally, the initialization and function subroutines must be contained
+in a dynamically loadable library.  Documented code and detailed
+instructions on building the library can be found in the following two
+examples.
+
+<ul>
+  <li> \ref subroutine1
+  <li> \ref subroutine2
+</ul>
+
+<a name="application"><em> Application Interface </em></a>
+
+For the application interface, the code varies according to the
+application.  What you need to provide is an executable (compiled or
+script) whose final result will be a file named "fvalue.out"
+("convalue.out" in the case of a nonlinear constraint) that contains a
+single number...the function value.  OPT++ does not care about
+anything else that happens in between.  The most important thing is to
+ensure that the directory structure is correct and that the files are
+located in the right place.
+
+First you must create a directory to hold all of the model
+information.  In our case, we will create the directory "TooMuchFun"
+in our home directory.  We will then create a subdirectory,
+"makecopies".  (The subdirectory must be named "makecopies".)
+
+<ul>
+   <li> mkdir TooMuchFun <br>
+   <li> cd TooMuchFun <br>
+   <li> mkdir makecopies
+</ul>
+
+In the application directory, you must place any user-created files
+that are needed by the application.  This includes things like mesh
+files and any executables that are not in your path or for which you
+have not listed the full path in the OPT++ input.  In our case, we
+will put rosen.e in the TooMuchFun directory.  This is our application
+executable, we did not include the path in the OPT++ input, and it
+cannot be accessed given our current path.  We also recomment putting
+the XML input file for OPT++ in this directory, but it is not
+necessary.
+
+In the "makecopies", you must place the templated input deck and any
+other application files that will be modified by the application
+during the execution of the application.  In this case, our
+application input deck is named "rosen.in", so we will place
+"rosen.in.Tmplt" in "makecopies".  (The templated input file must have
+a file extension of ".Tmplt".)  This templated input deck has keywords
+placed in the locations where the values of the optimization variables
+should appear.  For this very simple case, our templated input deck
+looks like the following:
+
+   \verbatim
+   var1 = OPT_x1 
+   var2 = OPT_x2
+   \endverbatim
+
+OPT_x1 and OPT_x2 are the keywords associated with the optimization
+variables.
+
+The most common mistakes are to forget a file, to misname it, or to
+put it in the wrong location.  So if you have trouble getting things
+to work and you can't find the problem elsewhere, be sure that your
+application directories are set up correctly.
+
+\section xml Creating an XML Input File Without the GUI
+
+If you would like to create an XML input file for OPT++ but cannot or
+choose not to use the GUI, we describe the form of that file here.
+Please be aware that you still have build OPT++ as described in
+<a href="InstallDoc.html#gui"> Configuring for use with the new (beta)
+GUI/XML Interface</a> section of the <a href="InstallDoc.html">
+Installation Documentation</a>.  Also, should you decide to use the
+GUI at some later time, we currently cannot guarantee it will read
+files you construct in this way.  (It is on the to-do list...)  You
+can find many examples in the OPT++/tests/xml directory.  Note that
+those examples were created using the GUI, so they have some
+additional things, like comments, that are not required by OPT++.  We
+show the XML files for the examples in the \ref code section.
+
+<ul>
+  <li> \ref xml1
+  <li> \ref xml2
+  <li> \ref xml3
+</ul>
+
+<p> Previous Section:  \ref SetUp | Next Section:  \ref Classification
+| Back to the <a href="index.html"> Main Page</a> </p>
+
+Last revised <em> July 25, 2006</em>
+
+
+*/

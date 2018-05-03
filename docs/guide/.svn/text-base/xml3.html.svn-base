@@ -1,0 +1,82 @@
+
+/** \page xml3 XML File 3:  Rosenbrock's Function (application)
+
+The XML file for OPT++ can be thought of as being broken down into
+blocks of XML.  Each block must be "opened" and "closed".  The main
+block is the OPT block.  It has two sub-blocks, ProblemSetup and the
+algorithm block.  Each of those has sub-blocks which contain the
+detailed information for OPT++.
+
+The ProblemSetup block has four sub-blocks.  The first is the function
+type.  In this case, it is "Application" since we are using the
+application interface.  You can see the data values for the
+Rosenbrock's function example.
+
+<table>
+<tr><td>
+\code
+<OPT>
+  <ProblemSetup>
+    <Application modelDir="/home/pdhough/TooMuchFun" modelInput="rosen.in" scriptName="rosen.e"/>
+\endcode
+</table>
+
+The second sub-block is the VariableClass block.  It contains an array
+of the optimization variables.  In this case, we have put both upper
+and lower bounds on the variables.
+
+<table>
+<tr><td>
+\code
+    <VariableClass numVariables="2">
+      <Array name="VariableList">
+        <Variables initVal="-1.2" lower="-5.0" upper="5.0" theName="OPT_x1"/>
+        <Variables initVal="1.0" lower="-5.0" upper="5.0" theName="OPT_x2"/>
+        </Variables>
+      </Array>
+    </VariableClass>
+\endcode
+</table>
+
+The third and fourth sub-blocks are LConstraintClass and
+NLConstraintClass, respectively.  Recall that there are no
+constraints, these blocks take the following form.
+
+<table>
+<tr><td>
+\code
+    <LConstraintClass numLConstraints="0">
+      <Array name="LinearConstraint"/>
+    </LConstraintClass>
+    <NLConstraintClass numNLConstraints="0">
+      <Array name="NonLinearConstraints"/>
+    </NLConstraintClass>
+  </ProblemSetup>
+\endcode
+</table>
+
+The algorithm block is named according to the algorithm that is being
+used.  In this case, it is Newton.  (The other possibilities are CG,
+PDS, and NIPS.)  The algorithm block has three sub-blocks that
+contain the algorithmic parameters.  There are the BasicOptions, the
+AdvancedOptions, and the algorithm-specific parameters.  The
+BasicOptions and AdvancedOptions are the same for all of the
+algorithms.  The algorithm-specific parameters vary.  You can see what
+they are for the different algorithms by looking at the examples in
+the OPT++/tests/xml directory.
+
+<table>
+<tr><td>
+\code
+  <Newton>
+    <BasicOptions maxFeval="10000" outFile="tstTRPDSapp.out" maxIter="100" Debug="false"/>
+    <AdvancedOptions maxStep="1.e3" conTol="1.49e-08" stepTol="1.49e-08" fcnTol="1.49e-08" gradTol="6.05e-06" minStep="1.49e-08"/>
+    <trustPDS searchSize="64" gradMult="0.1"/>
+  </Newton>
+</OPT>
+\endcode
+</table>
+
+<p> Previous Example:  \ref xml2 | Back to \ref GUI_XMLDoc </p>
+
+*/

@@ -1,0 +1,218 @@
+
+			OPT++ 2.4
+	 A Nonlinear Optimization Package in C++.
+
+---------------------------------------------------------------------------
+
+Authors:  Juan C. Meza
+	  Lawrence Berkeley National Laboratory
+
+	  Patricia D. Hough
+	  Sandia National Laboratories
+
+	  Pamela J. Williams
+	  Sandia National Laboratories
+
+	  Ricardo A. Oliva
+	  Sabio Labs
+
+Bug Reports:  http://software.sandia.gov/bugzilla
+
+Contact:  opt++-developers@software.sandia.gov
+
+URLs:  http://csmr.ca.sandia.gov/projects/opt++
+       http://www.nersc.gov/~meza/projects/opt++
+
+Thanks to Sherae Daniel of the University of Maryland and Andrew
+Rothfuss of Sandia National Labs for help with the GUI/XML interface.
+Thanks also to Edward Walsh and Shane Brown, both of Sandia National
+Labs, for their assistance in converting the build system to
+autotools.
+
+---------------------------------------------------------------------------
+
+Description
+
+OPT++ is a C++ library of nonlinear optimization algorithms.  The
+motivation for this package is to build an environment for the rapid
+prototyping and development of new optimization algorithms.  In
+particular, the focus is on robust and efficient algorithms for
+problems in which the function and constraint evaluations require the
+execution of an expensive computer simulation.
+
+Currently, OPT++ includes the classic Newton methods, a nonlinear
+interior-point method, parallel direct search, a trust region -
+parallel direct search hybrid, a generating set search, and a wrapper
+to NPSOL.  Between these methods, a wide range of problems can be
+solved, e.g. with or without constraints, with or without analytic
+gradients, simulation based, etc.
+
+The package consists of the following subdirectories:
+
+	config		The config directory contains the autotools
+			macros that are needed to successfully
+			configure and build OPT++.
+
+	docs		Documentation for OPT++ resides in the docs
+			subdirectory.  The most comprehensive form of
+			the documentation is HTML that can be built
+			using doxygen.
+
+	include		The include subdirectory contains all of the
+			OPT++ header files.  These files define the
+			data members and functions needed for both
+			problem setup and algorithm execution.
+
+	lib		After they are built, the OPT++ and NEWMAT
+			libraries will be placed in the lib
+			subdirectory.
+
+	newmat11	Included and used by OPT++ is R.B. Davies's
+			matrix package, newmat11, with some minor
+			modifications required for the optimization
+			package.  Changes to newmat are
+			print.C:  printing routines taken from tmt.cxx
+			newmat.h: added two new member functions Dot
+				  and Norm2 to ColumnVector
+ 			For package conditions of use, please refer to
+                        the CONDITIONS_OF_USE file located in the
+			newmat11 directory.
+
+	src		The src subdirectory contains all of the OPT++
+			source code.  It is broken down into six
+			subdirectories.
+			Base:	      	code for all of the base
+					classes
+			Constraints:  	code for definition and
+				      	manipulation of constraints
+			GSS:		code for the Generating Set
+					Search algorithm
+			Newton:	      	code for the Newton-based
+				      	optimization algorithms
+			PDS:	      	code for the Parallel Direct
+				      	Search algorithm
+			UserInterface	code for the XML interface
+			Utils:	      	code for miscellaneous
+				      	operations performed in OPT++
+
+	tests		The tests subdirectory contains a variety of
+			regression tests and examples.  These reside
+			the tests/constraints, tests/hock, tests/npsol,
+			tests/parallel, tests/uncon, and tests/xml
+			subdirectories.
+
+OPT++ has been copyrighted by Sandia Corporation and is freely
+distributed under GNU Lesser General Public License.  Please see the
+COPYRIGHT and the GNU_LGPL files in this directory for more
+information.
+
+---------------------------------------------------------------------------
+
+Installation - The Basics
+
+The installation procedure is based on the GNU Autotools.  You should
+be able to configure OPT++ for your particular system and then type
+make in the top level directory.  There is also a set of regression
+tests that you can build and run.
+
+If you are in a real hurry or one of the truly impatient, the
+following 3 commands lines should get you going on most systems.
+
+	1) cd optpp-2.4
+	2) ./configure 
+	3) make >& make.log
+	4) make check >& makecheck.log
+	5) make install
+
+Note that the final step will install OPT++ in /usr/local, and thus,
+you must have root privileges in order to execute that step
+successfully.  Be sure to examine the make.log and check.log files to
+ensure that the build was successful and that the regression tests
+passed.  Report any problems via Bugzilla
+(http://software.sandia.gov/bugzilla).
+
+For additional options and further details about configuring,
+building, and using OPT++, please see the INSTALL file in the
+top-level OPT++ directory or the complete HTML documentation.
+
+You can obtain the HTML documentation in one of two ways.  The first
+is to download the tar file, docs.tgz, from the OPT++ web page
+(http://csmr.ca.sandia.gov/projects/opt++) and follow the included
+instructions.  This tar file contains the pre-built HTML files.  The
+alternative is to build the documentation with doxygen.  To do this,
+modify step 2 above to the following:
+
+	./configure --enable-html-docs
+
+The HTML documentation will then automatically be built in step 3 if
+doxygen is installed on your system.  To access it, use your favorite
+browser to open the file docs/html/index.html.
+
+---------------------------------------------------------------------------
+
+Known Issues
+
+Alas, there a few issues that we are aware of:
+
+	1) BLAS: The m4 macro that we obtained to detect BLAS
+	   libraries is a few years old, so there are a couple of
+	   cases where they are not detected correctly.
+
+		- Intel compilers (icpc/icc) - The Math Kernel
+		  Libraries (MKL) are not detected.  If you want to
+		  make use of the BLAS from MKL, you will have to set
+		  the BLAS_LIBS environment variable to the
+		  appropriate path.
+		- MAC OS X - The BLAS are implemented a little
+		  differently on the MAC.  In particular, they are
+		  implemented as frameworks and thus not detected as
+		  libraries.  If you want to use the native MAC
+		  implementation, set the LDFLAGS environment variable
+		  to "-framework vecLib".
+		- SUN compilers (CC/cc) - Depending on which version
+		  of the compilers you have, you may or may not have a
+		  problem.  The macro does not take into account some
+		  recent changes associated with the newer
+		  implementations.  If there are problems, they will
+		  show up at link time.  In that case, try setting the
+		  BLAS_LIBS environment variable to
+		  "/opt/SUNWspro/lib/libsunperf.so".
+
+	   We will work on correcting these issues.
+
+	2) NPSOL: We had problems linking in NPSOL on the MAC
+	   platform.  Try explicitly setting your FLIBS environment
+	   variable to "-L/sw/lib -lfrtbegin -lg2c -lm -lgcc".  That
+	   may or may not do the trick.
+
+	   We also had problems linking NPSOL with the GNU 4.0.2
+	   compilers.  We will keep working on both these issues.
+
+	3) XML/GUI: The XML and GUI interface has not been updated
+	   yet, so it is currently not available with this version.
+	   We will get this finished and distribute a patch file as
+	   quickly as we can.
+
+	4) PGI Compilers: In our testing, we found that autotools was
+	   adding an invalid item to the list of libraries when using
+	   the PGI compilers.  This causes the build of the test
+	   problems to break.  We have not yet isolated the problem,
+	   but in the the meantime, it is an easy fix.  If "make
+	   check" fails, go into the "Makefile" in each of the test
+	   directories (tests/constraints, tests/hock, tests/npsol,
+	   tests/parallel, and tests/uncon) and search for "FLIBS".
+	   Delete the first entry in the list, "-lm'"...it is that
+	   extra single quote that is the culprit.  Then try "make
+	   check" again.
+
+---------------------------------------------------------------------------
+
+WARNING: This is RESEARCH code, and we all know what that means!
+While it should run on most UNIX platforms with ANSI-compliant C++/C
+compilers, there are no guarantees.  On the bright side, we are happy
+to improve the reliability of the code.  Please report bugs to the
+authors via Bugzilla (http://software.sandia.gov/bugzilla).  Please
+include complete information about your system (the output from the
+command "uname -a" and the compiler/version), the exact error messages
+generated, and any output produced.  If possible, a small piece of
+code that generates the bug would be most helpful.

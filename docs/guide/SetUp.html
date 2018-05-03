@@ -1,0 +1,337 @@
+
+/** \page SetUp Setting up and Solving an Optimization Problem
+
+<p> 
+In OPT++, the standard form of the optimization problem is
+<center>
+	<table>
+	<tr><td>
+		\f[ \begin{array}{ll}
+			\mbox{minimize} & f(x)\\ 
+		\mbox{subject to} & g(x) \ge 0, \\ & h(x) = 0. \end{array} \f]
+	</table>
+</center>
+where \f$ f: \bf{R}^n \rightarrow \bf{R} \f$,
+\f$ g: \bf{R}^n \rightarrow \bf{R}^{mi} \f$, and
+\f$ h: \bf{R}^n \rightarrow \bf{R}^{me} \f$. 
+</p>
+
+To solve an optimization problem with OPT++, an user
+must 1) write a C++ main routine which set ups the problem and 
+algorithm  and 2) write the C++ code that evaluates the function and
+and associated constraints.  A more detailed explanation and an example
+appear in the following sections.
+
+<ul>
+<li>  \ref problem <br>
+<li>  \ref algorithm <br>
+<li>  \ref example <br>
+</ul>
+
+\section problem Problem Setup
+
+As part of the main routine, the user must first construct the
+nonlinear function object.  This provides essential information regarding
+the function to be optimized.  In particular, it provides the
+dimension of the problem, pointers to the subroutines that initialize
+and evaluate the function (see <a href="#functions"> User-Defined
+Functions</a>), and a pointer to the constraints (see <a
+href="#constraints"> Constraint Setup</a>).  The constructor can take
+any one of multiple forms.  The most common ones are shown here, along
+with a description of the type of problem for which each is intended.
+Further information about these objects can be found the <a
+href="annotated.html"> detailed documentation.</a>
+
+<ul>
+  <li> NLF0(ndim, fcn, init_fcn, constraint): problem has no analytic
+  derivative information available
+  <BR>
+  <li> NLF1(ndim, fcn, init_fcn, constraint): problem has analytic
+  first derivatives available, but no analytic second derivatives
+  <BR>
+  <li> NLF2(ndim, fcn, init_fcn, constraint):  problem has analytic first and
+       second derivatives available
+  <BR>
+  <li> FDNLF1(ndim, fcn, init_fcn, constraint): problem has no
+  analytic derivative information available, but finite differences
+  are used to approximate first derivatives
+  <BR>
+  <li> LSQNLF(ndim, lsqterms, lsqfcn, init_fcn, constraint): problem has a
+  least squares operator, Gauss-Newton is used to approximate Jacobian
+  and Hessian
+</ul>
+
+The arguments to the constructors must be defined before instantiating
+the function object. The following description holds for the first four 
+nonlinear function objects, which have identical argument lists. We will
+define the argument list for the LSQNLF later.
+
+The first argument, <em>ndim</em>, is an integer
+specifying the dimension of the problem.  The second argument,
+<em>fcn</em>, is a pointer to the subroutine that evaluates the
+function.  The form of this pointer/subroutine is described in more
+detail in the <a href="#functions"> User-Defined Functions</a>
+subsection.  The third argument, <em>init_fcn</em>, is a pointer to
+the subroutine that initializes the function.  Again, the form of this
+pointer/subroutine is described in the <a href="#functions">
+User-Defined Functions</a> subsection.  The final argument,
+<em>constraint</em>, is a pointer to a constraint object.  If the
+optimization problem of interest has no constraints, this argument can
+be excluded.  Otherwise, it can be constructed as described in the
+<a href="#constraints"> %Constraint Setup</a> subsection. 
+
+Once the problem has been instantiated, it must be initialized with
+its initFcn method.  More information on these objects and their
+associated methods can be found in the <a href="annotated.html">
+detailed documentation</a>; however, the tutorials on their usage in
+the <a href="#example"> Example Problems</a> section will probably be
+more useful.
+
+For the LSQNLF object, the first argument, <em>ndim</em>, is an integer
+specifying the dimension of the problem.  The second argument, 
+<em>lsqterms</em>, is an integer specifying the number of least square terms
+in the function. The third argument,
+<em>lsqfcn</em>, is a pointer to the subroutine that evaluates the least squares
+operator.  The form of this pointer/subroutine is described in more
+detail in the <a href="#functions"> User-Defined Functions</a>
+subsection.  The remaining arguments have the same meaning as previously
+defined. 
+
+<a name="constraints"><em> %Constraint Setup </em></a>
+
+Setting up the constraints consists of two main steps.  The first step
+defines the different classes of constraints present.  The second step
+rolls them all up into a single object.  The most common forms of
+the necessary constructors are listed here.
+
+<ul>
+  <li> constraint types
+    <ul>
+      <li> BoundConstraint(numconstraints, lower, upper);
+      <li> LinearInequality(A, rhs, stdFlag); 
+      <li> NonLinearInequality(nlprob, rhs, numconstraints, stdFlag); 
+      <li> LinearEquation(A, rhs);
+      <li> NonLinearEquation(nlprob, rhs, numconstraints);
+    </ul>
+  <li> the whole shebang
+    <ul>
+      <li> CompoundConstraint(constraints); 
+    </ul>
+</ul>
+
+The arguments required by the constraint constructors are relatively
+self-explanatory, but require some implementation effort.
+<em>numconstraints</em> is an integer specifying the number of
+constraints of the type being constructed, <em>lower</em> is a
+ColumnVector containing the lower bounds on the optimization
+variables, <em>upper</em> is a ColumnVector containing the upper
+bounds, <em>A</em> is a Matrix containing the coefficients of the
+terms in the linear constraints, <em>rhs</em> is a ColumnVector
+containing the values of the right-hand sides of the linear and
+nonlinear constraints, and <em>nlprob</em> is a function that
+evaluates the nonlinear constraints.  This function is set up in the
+same manner as the objective function described in the <a
+href="problem"> Problem Setup</a> section.  The variable,
+<em>stdFlag</em> is a Boolean variable indicating whether or not
+inequality constraints are given in standard form.  The standard form
+is given in the <a href="annotated.html"> detailed documentation</a>.
+Finally, the single argument, <em>constraints</em>, to the
+CompoundConstraint constructor is an OptppArray of the constraints
+created using the constructors of the specific types.
+
+Details about the OptppArray object can be found in the <a
+href="annotated.html"> detailed documentation</a>, while information
+about the ColumnVector and Matrix objects can be found in the <a
+href="http://robertnz.net/nm11.htm"> NEWMAT documentation</a>.
+The most useful documentation, however, appears in the <a
+href="#example"> Example Problems</a>.
+
+<a name="functions"><em> User-Defined Functions </em></a>
+
+In addition to the main routine, the user must provide additional C++
+code that performs the initialization of the problem, the evaluation
+of the objective function, and the evaluation of any nonlinear
+constraints.  This code must also include the computation of any
+analytic derivative information that is to be provided.  These
+subroutines may appear in the same file as the main routine or in a
+separate file, and they must satisfy the interfaces listed below.
+
+The function interfaces are the following:
+
+<ul>
+  <li> to initialize the problem
+    <ul>
+      <li> void (*INITFCN)(ndim, x)
+    </ul>
+  <li> to evaluate the objective function
+    <ul>
+      <li> void (*USERFCN0)(ndim, x, fx, result):  for NLF0 and FDNLF1
+      <li> void (*USERFCN1)(mode, ndim, x, fx, gx, result):  for NLF1
+      <li> void (*USERFCN2)(mode, ndim, x, fx, gx, Hx, result):  for NFL2
+      <li> void (*USERFCNLSQ0)(ndim, x, lsfx, result):  for LSQNLF or
+      <li> void (*USERFCNLSQ1)(mode, ndim, x, lsfx, lsgx, result):  for LSQNLF
+    </ul>
+</ul>
+
+The arguments of these functions are fairly straightforward.
+<em>ndim</em> is an integer that specifies the dimension of the
+problem, <em>x</em> is a ColumnVector that contains the values of the
+optimization variables, <em>fx</em> is the value of the objective
+function at <em>x</em>, <em>gx</em> is a ColumnVector containing the
+gradient of the objective function at <em>x</em>, <em>Hx</em> is a
+SymmetricMatrix containing the Hessian of the objective function at
+<em>x</em>, <em>mode</em> is an integer encoding of the type of
+evaluation requested (i.e., function, gradient, Hessian), and
+<em>result</em> is an integer encoding of the type of evaluations
+available.  For the least squares operator, <em>lsfx</em> is a ColumnVector
+with each entry containing the value of one of the least squares terms and 
+<em>lsgx</em> is a Matrix containing the Jacobian of the least squares 
+operator at <em>x</em>.
+The ColumnVector, Matrix, and SymmetricMatrix objects are described
+in the <a href="http://robertnz.net/nm11.htm"> NEWMAT
+documentation</a>.  The <a href="#example"> Example Problems</a>
+demonstrate how to implement the user-defined functions.
+
+Nonlinear constraints are quite similar in nature to the objective
+function.  In fact, they are constructed using the function objects in
+the <a href="#problem"> Problem Setup</a> section.  The interfaces for
+the subroutines that evaluate the nonlinear constraints, however, are
+slightly different from those for evaluating the objective function.
+The interfaces are as follows:
+
+<ul>
+  <li> void (*USERNLNCON0)(ndim, x, cx, result): for nonlinear
+  constraints with no analytic first or second derivatives
+  <li> void (*USERNLNCON1)(mode, ndim, x, cx, cgx, result): for
+  nonlinear constraints with analytic or finite-difference first
+  derivative, but no analyatice second derivative
+  <li> void (*USERNLNCON2)(mode, ndim, x, cx, cgx, cHx, result): for
+  nonlinear constraints with analytic first and second derivatives
+</ul>
+
+The arguments of these functions are fairly straightforward.
+<em>ndim</em> is an integer that specifies the dimension of the
+problem, <em>x</em> is a ColumnVector that contains the values of the
+optimization variables, <em>cx</em> is a ColumnVector with each entry
+containing the value of one of the nonlinear constraints at
+<em>x</em>, <em>cgx</em> is a Matrix with each column containing the
+gradient of one of the nonlinear constraints at <em>x</em>,
+<em>cHx</em> is an OptppArray of SymmetricMatrix with each matrix
+containing the Hessian of one of the nonlinear constraints at
+<em>x</em>, <em>mode</em> is an integer encoding of the type of
+evaluation requested (i.e., function, gradient, Hessian), and
+<em>result</em> is an integer encoding of the type of evaluations
+available.  A description of OptppArray can be found in the <a
+href="annotated.html"> detailed documentation</a>.  The ColumnVector
+and SymmetricMatrix objects are described in the <a
+href="http://robertnz.net/nm11.htm"> NEWMAT documentation</a>.  The
+<a href="#example"> Example Problems</a> demonstrate how to implement
+the user-defined functions.  In particular, <a href="example2.html">
+Example 2</a> demonstrates the use of constraints.
+
+\section algorithm Algorithm Setup
+
+Once the nonlinear function (see <a href="#problem"> Problem
+Setup</a>) has been set up, it is time to construct the algorithm
+object.  This defines the optimization algorithm to be used and
+provides it with a pointer to the problem to be solved.  Once this is
+done, any algorithmic parameters can be set, and the problem can be
+solved.  The full set of algorithms provided and their constructors
+can be found throughout the documentation.  We list the most common
+ones here, grouped according to the type of problem expected.
+
+<ul>
+  <li> problem has no analytic derivatives (NLF0)
+    <ul>
+      <li>OptPDS(&nlp):  parallel direct search method; handles general
+          constraints, but only bounds robustly
+      <li>OptGSS(&nlp, &gsb):  generating set search method; handles 
+          unconstrained problems only
+    </ul>
+  <li> problem has analytic or finite-difference first derivative
+       (NLF1 or FDNLF1)
+    <ul>
+      <li> OptCG(&nlp):  conjugate gradient method; handles
+           unconstrained problems only
+      <li> OptLBFGS(&nlp):  limited-memory quasi-Newton method for unconstrained
+           problems; uses L-BFGS for Hessian approximation
+      <li> OptQNewton(&nlp):  quasi-Newton method for unconstrained
+           problems; uses BFGS for Hessian approximation
+      <li> OptFDNewton(&nlp):  Newton method for unconstrained
+           problems; uses second-order finite differences for Hessian
+           approximation
+      <li> OptBCQNewton(&nlp):  quasi-Newton method for
+	   bound-constrained problems; uses BFGS for Hessian
+	   approximation
+      <li> OptBaQNewton(&nlp):  quasi-Newton method for
+           bound-constrained problems; uses BFGS for Hessian
+	   approximation
+      <li> OptBCEllipsoid(&nlp):  ellipsoid method for
+           bound-constrained problems
+      <li> OptFDNIPS(&nlp):  Newton nonlinear interior-point
+           method for generally constrained problems; uses
+	   second-order finite differences for Hessian
+	   approximation
+      <li> OptQNIPS(&nlp):  quasi-Newton nonlinear interior-point
+           method for generally constrained problems; uses BFGS for
+	   Hessian approximation
+    </ul>
+  <li> problem has analytic first and second derivatives (NLF2)
+    <ul>
+      <li> OptNewton(&nlp):  Newton method for unconstrained
+           problems
+      <li> OptBCNewton(&nlp):  Newton method for bound-constrained
+	   problems
+      <li> OptBaNewton(&nlp):  Newton method for bound-constrained
+           problems
+      <li> OptNIPS(&nlp):  nonlinear interior-point method for
+	   generally constrained problems
+    </ul>
+  <li> problem has least squares function operator (LSQNLF)
+    <ul>
+      <li> OptDHNIPS(&nlp):  Disaggregated Hessian Newton nonlinear 
+           interior-point method for generally constrained problems; 
+           uses Gauss-Newton approximations to compute objective function
+           gradient and Hessian;
+           uses quasi-Newton approximations for constraint Hessians;
+    </ul>
+</ul>
+
+In these constructors, <em>nlp</em> is the nonlinear function/problem
+object created as described in the <a href="#problem"> Problem
+Setup</a> section and <em>gsb</em> is the generating set method described in
+the <a href="gensetGuide-format.html"> Generating Set Search </a> section.  
+All of the Newton methods have a choice of
+globalization strategy: line search, trust region, or trust
+region-PDS.  Furthermore, there are numerous algorithmic parameters
+that can be set.  These can be found in the <a href="annotated.html">
+detailed documentation</a> for each particular method.
+
+Once the algorithm object has been instantiated and the desired
+algorithmic parameters set, the problem can then be solved by calling
+that algorithm's optimize method.  Tutorial examples of how to do set
+up and use the optimization algorithms can be found in the <a
+href="#example"> Example Problems</a>.
+
+\section example Example Problems
+
+In order to clarify the explanations given above, we now step through
+a couple of example problems.  These examples are intended to serve as
+a very basic tutorial.  We recommend looking at the <a
+href="examples.html"> additional examples</a> provided in the
+documentation in order to obtain a broader view of the capabilities of
+OPT++.  In addition, the <a href="annotated.html"> detailed
+documentation</a> contains a complete list of the capabilities
+available.
+
+<ul>
+  <li> \ref example1
+  <li> \ref example2
+</ul>
+
+<p> Previous Section:  \ref InstallDoc | Next Section:  \ref AlternativeFunctions
+| Back to the <a href="index.html"> Main Page</a> </p>
+
+Last revised <em> July 25, 2006</em>
+
+*/

@@ -1,0 +1,749 @@
+
+/** \page InstallDoc Installation
+
+The following sections contain instructions for compiling and testing
+OPT++.  The basic instructions are followed by more detailed
+explanations of each step in the process.  A brief summary of how to
+use OPT++ appears at the end; however, we encourage the user to
+continue reading the documentation for more extensive details.  The
+following topics are covered on this page.
+
+<ol>
+  <li> <a href ="#installbasics"> Installation - The Basics</a> <br>
+  <li> \ref configuration <br>
+     <ul>
+     <li> <a href="#general"> Generally useful configuration commands</a> <br>
+     <li> <a href="#compiler"> Configuring for a particular compiler</a> <br>
+     <li> <a href="#blas"> Configuring for a particular BLAS library</a> <br>
+     <li> <a href="#parallel"> Configuring for parallel use</a> <br>
+     <li> <a href="#npsol"> Configuring to use NPSOL</a> <br>
+     <li> <a href="#documentation"> Configuring to build HTML documentation</a> <br>
+     </ul>
+  <li> <a href = "#make"> Step 2 - Making </a><br>
+  <li> <a href = "#test"> Step 3 - Testing </a><br>
+  <li> <a href = "#usage"> Using OPT++</a><br>
+  <li> <a href = "#platforms"> Platform Information </a><br>
+  <li> <a href = "#issues"> Known Issues </a><br>
+  <li> <a href = "#disclaimer"> The Standard Absolution of Responsibility</a><br>
+</ol>
+
+\section installbasics Installation - The Basics
+
+The installation procedure is based on the GNU Autotools.  You should
+be able to configure OPT++ for your particular system and then type
+make in the top level directory.  There is also a set of regression
+tests that you can build and run.
+
+If you are in a real hurry or one of the truly impatient, the
+following 5 command lines should get you going on most systems.
+
+<ol>
+	<li> cd optpp-2.4
+	<li> ./configure 
+	<li> make >& make.log
+	<li> make check >& makecheck.log
+	<li> make install
+</ol>
+
+Note that the final step will install OPT++ in /usr/local, and thus,
+you must have root privileges in order to execute that step
+successfully.  Be sure to examine the make.log and check.log files to
+ensure that the build was successful and that the regression tests
+passed.  Report any problems via <a
+href="http://software.sandia.gov/bugzilla"> Bugzilla</a>.
+
+Additional options and further details about configuring and building
+OPT++ appear in the following sections.  A brief overview of how to
+use OPT++ can be found in the <a href="#usage"> Using OPT++</a>
+section.  A more extensive tutorial can be found in the <a
+href="SetUp.html"> Setting up and Solving an Optimization Problem</a>
+section.
+
+\section configuration Step 1 - Configuring
+
+The purpose of the configuration step is to create the Makefile that
+will build a version of OPT++ that is appropriate for the system on
+which you intend to use it.  The simplest form of the command is
+
+       \verbatim
+          ./configure
+       \endverbatim
+
+This uses the default settings, and the resulting configuration can be
+found in the "config.log" and "config.status" files.
+
+There are a number of options that you can set during the
+configuration process.  Each requires adding a flag to the configure
+command.  You can add as many flags as required to obtain the desired
+configuration.  The most useful and common configuration options for
+OPT++ are described below.
+
+<a name="general"><em> Generally useful configuration commands </em></a>
+
+There are a number of options that you can set during the
+configuration process.  To see them all, you can use the command
+
+       \verbatim
+          ./configure --help
+       \endverbatim
+
+If you wish to install OPT++ in a directory other than /usr/local, the
+configuration command should look something like the following:
+
+       \verbatim
+          ./configure --prefix=directory_to_install_OPT++
+       \endverbatim
+
+<a name="compiler"><em> Configuring for a particular compiler </em></a>
+
+For most operating systems, there are multiple compilers that can be
+used.  The default configure behavior is to use the GNU compilers if
+they are installed on your system.  If not, configure will search for
+a number of other common compilers.  This behavior can be overridden
+by setting the CXX, CC, and F77 environment variables.  If these
+variables are set, those are the compilers that will be used.  There
+are two ways to specify the values of CXX, CC, and F77 to configure.
+
+<ol>
+	<li> The first is at configure time.  Use the command
+       \verbatim
+          ./configure CXX=<C++ compiler> CC=<C compiler> F77=<F77 compiler>
+       \endverbatim
+
+	   Note that if these compilers do not appear in your path,
+	   you must specify the full path.
+
+	<li> The other means of specifying alternate compilers is to
+	   set the CXX, CC, and F77 environment variables before you
+	   execute configure.  If you are using the bash shell, do
+
+       \verbatim
+          export CXX=<C++ compiler>
+	  export CC=<C compiler>
+	  export F77=<F77 compiler>
+       \endverbatim
+
+	   to set these variables.  If you are using csh or tcsh, do
+
+       \verbatim
+          setenv CXX <C++ compiler>
+	  setenv CC <C compiler>
+	  setenv F77 <F77 compiler>
+       \endverbatim
+
+	   As in the first case, you must specify the full path if the
+	   compilers do not already appear in your path.  Then simply,
+	   type
+
+       \verbatim
+          ./configure
+       \endverbatim
+
+</ol>
+
+<a name="blas"><em> Configuring for a particular BLAS library </em></a>
+
+OPT++ makes use of a few BLAS routines.  At the configure stage, it
+will search for a BLAS library on your system.  The default behavior
+is to look for the following libraries (depending on the platform you
+are building on): ATLAS library, PhiPACK library, Alpha CXML library,
+Alpha DXML library, Sun Performance Library, SGI/CRAY SCSL library,
+SGIMATH library, IBM ESSL library, and generic BLAS library.  (Please
+see the <a href = "#issues">"Known Issues"</a> section for issues
+associated with detecting BLAS libraries.)  If it finds one of these
+libraries at configure time, that is the BLAS library that will be
+used.  If none of these are found, OPT++ will fall back on its own
+implementation of the needed BLAS routines.  If you would like to use
+a BLAS library other than those listed above, you can specify the name
+of that library by setting the BLAS_LIBS environment variable.  That
+can be done in one of two ways.
+
+<ol>
+	<li> The first is on the command line for configure.  For
+	   example,
+
+       \verbatim
+          ./configure --with-blas=/path/to/blas/blaslibraryname.a
+       \endverbatim
+
+	   Note that you must include the name of the library.
+
+	<li> The other means of specifying the BLAS library to use is
+	   to set the BLAS_LIBS environment variable before you
+	   execute configure.  If you are using the bash shell, do
+
+       \verbatim
+          export BLAS_LIBS=/path/to/blas/blaslibraryname.a
+       \endverbatim
+
+	   to set this variable.  If you are using csh or tcsh, do
+
+       \verbatim
+          setenv BLAS_LIBS /path/to/blas/blaslibraryname.a
+       \endverbatim
+
+	   As before, you must include the name of the library.  Then
+	   simply, type
+
+       \verbatim
+          ./configure
+       \endverbatim
+</ol>
+
+Finally, if you wish to not use any BLAS library and instead use the
+OPT++ implementation, use the following form of configure statement:
+
+       \verbatim
+          ./configure --without-blas
+       \endverbatim
+
+<a name="parallel"><em> Configuring for parallel use </em></a>
+
+The default configuration builds OPT++ to run serially; however, OPT++
+does have algorithms the leverage parallelism should you wish to take
+advantage of that capability.  Parallelism is achieved through
+the use of MPI.  The assumption is that an implementation of MPI is
+already installed somewhere on your system.  If it is not, there are a
+number of open source versions you can download and install.  Those
+under active development include:
+       
+          mpich2: <a href="http://www-unix.mcs.anl.gov/mpi/mpich2/">http://www-unix.mcs.anl.gov/mpi/mpich2/</a> <br>
+	  openMPI: <a href ="http://www.open-mpi.org/">http://www.open-mpi.org/</a>
+
+Older versions that are only maintained include:
+
+          mpich1: <a href="http://www-unix.mcs.anl.gov/mpi/mpich1/">http://www-unix.mcs.anl.gov/mpi/mpich1/</a> <br>
+	  LAM MPI: <a href="http://www.lam-mpi.org/">http://www.lam-mpi.org/</a> <br>
+	  LA-MPI: <a href="http://public.lanl.gov/lampi/">http://public.lanl.gov/lampi/</a> <br>
+
+To configure for parallel use, use the command
+
+       \verbatim
+          ./configure --enable-mpi
+       \endverbatim
+
+This will look for a number of both open source and vendor
+implementations of the MPI compilers.  If none are found, the parallel
+version of OPT++ will not be built.  If the MPI compilers are not in
+your path or if you wish to use a particular version of MPI, you can
+specify the MPI compilers to use by setting the MPICXX, MPICC, and
+MPIF77 environment variables.  If these variables are set, those are
+the compilers that will be used.  There are two ways to specify the
+values of MPICXX, MPICC, and MPIF77 to configure.
+
+<ol>
+	<li> The first is to set the environment variables on the
+	   command line for configure.  For example,
+
+       \verbatim
+          ./configure --enable-mpi MPICXX=<MPI C++ compiler> \
+	              MPICC=<MPI C compiler> MPIF77=<MPI F77 compiler>
+       \endverbatim
+
+	   Note that if these compilers do not appear in your path,
+	   you must specify the full path.
+
+	<li> The other means of specifying alternate compilers is to
+	   set the MPICXX, MPICC, and MPIF77 environment variables
+	   before you execute configure.  If you are using the bash
+	   shell, do
+
+       \verbatim
+          export MPICXX=<MPI C++ compiler>
+	  export MPICC=<MPI C compiler>
+	  export MPIF77=<MPI F77 compiler>
+       \endverbatim
+
+	   to set these variables.  If you are using csh or tcsh, do
+
+       \verbatim
+          setenv MPICXX <MPI C++ compiler>
+	  setenv MPICC <MPI C compiler>
+	  setenv MPIF77 <MPI F77 compiler>
+       \endverbatim
+
+	   As in the first case, you must specify the full path if the
+	   compilers do not already appear in your path.  Then simply,
+	   type
+
+       \verbatim
+          ./configure --enable-mpi
+       \endverbatim
+</ol>
+
+<a name="npsol"><em> Configuring to use NPSOL </em></a>
+
+The default configuration constructs a Makefile that will build OPT++
+without any knowledge of NPSOL; however, OPT++ does have a wrapper for
+NPSOL should you wish to use it.  (Please see the "Known Issues"
+section at the end of this file for issues associated with including
+NPSOL.)  The assumption is that NPSOL is already installed somewhere
+on your system.  If it is not, you must install it.  You can find more
+information about NPSOL at <a
+href="http://www.sbsi-sol-optimize.com/NPSOL.htm">http://www.sbsi-sol-optimize.com/NPSOL.htm</a>
+
+To configure for use with NPSOL, use the command
+
+       \verbatim
+          ./configure --with-npsol
+       \endverbatim
+
+This will look for libnpsol.a and npsol.a in /usr/local/lib and
+/usr/lib.  If it does not find one of those libraries in one of those
+locations, OPT++ will fall back on the default behavior of not
+including NPSOL.  You can specify an alternate location and/or library
+name for NPSOL by setting the NPSOL_LIB environment variable.  There
+are two ways to do this.
+
+<ol>
+	<li> The first is on the command line for configure.  For
+	   example,
+
+       \verbatim
+          ./configure --with-npsol=/path/to/npsol/npsollibraryname.a
+       \endverbatim
+
+	   Note that you must include the name of the library.
+
+	<li> The other means of specifying an alternate NPSOL library
+	   is to set the NPSOL_LIB environment variable before you
+	   execute configure.  If you are using the bash shell, do
+
+       \verbatim
+          export NPSOL_LIB=/path/to/npsol/npsollibraryname.a
+       \endverbatim
+
+	   to set this variable.  If you are using csh or tcsh, do
+
+       \verbatim
+          setenv NPSOL_LIB /path/to/npsol/npsollibraryname.a
+       \endverbatim
+
+	As before, you must include the name of the library.  Then
+	simply, type
+
+       \verbatim
+          ./configure --with-npsol
+       \endverbatim
+</ol>
+
+<a name="documentation"><em> Configuring to build HTML documentation </em></a>
+
+As already mentioned, OPT++ comes with HTML documentation.  The
+default behavior does not build the HTML documentation, but you can
+configure OPT++ to build it when you build the libraries.  In order to
+do this, doxygen must be installed on your system.  Doxygen is
+standard in most unix distributions, but if it is not installed, you
+can download it at <a
+href="http://www.stack.nl/~dimitri/doxygen/">http://www.stack.nl/~dimitri/doxygen/</a>
+
+To configure OPT++ to build the HTML documentation, simply type
+
+       \verbatim
+          ./configure --enable-html-docs
+       \endverbatim
+
+This assumes that doxygen appears in your path.  If it does not, you
+can specify the location using the DOXYGEN environment variable.
+There are two ways to do this.
+
+<ol>
+	<li> The first is on the command line for configure.  For
+	   example,
+
+       \verbatim
+          ./configure --enable-html-docs DOXYGEN=path/to/doxygen/doxygen
+       \endverbatim
+
+	   Note that you must include the name of the executable.
+
+	<li> The other means of specifying an alternate doxygen
+	   executable is to set the DOXYGEN environment variable
+	   before you execute configure.  If you are using the bash
+	   shell, do
+
+       \verbatim
+          export DOXYGEN=path/to/doxygen/doxygen
+       \endverbatim
+
+	   to set this variable.  If you are using csh or tcsh, do
+
+       \verbatim
+          setenv DOXYGEN path/to/doxygen/doxygen
+       \endverbatim
+
+	   As before, you must include the name of the executable.
+	   Then simply, type
+
+       \verbatim
+          ./configure --enable-html-docs
+       \endverbatim
+</ol>
+
+The HTML documentation will then automatically be built when you do
+'make'.  To access it, use your favorite browser to open the file
+OPT++/docs/html/index.html.
+
+Alternatively, you can obtain the HTML documentation by downloading
+the tar file, docs.tgz, from the <a
+href="http://csmr.ca.sandia.gov/projects/opt++">OPT++ web page</a>.
+
+\section make Step 2 - Making
+
+Once it has been configured, building OPT++ is straightforward.
+From the top-level OPT++ directory, simply issue the command
+
+       \verbatim
+          make
+       \endverbatim
+
+As a slight modification, we recommend directing the output to a file
+so the output can be more closely examined for errors.  In this case,
+the command becomes
+
+       \verbatim
+          make >&! make.log
+       \endverbatim
+
+If there are errors in the build, please report the problem to the
+authors via <a href="http://software.sandia.gov/bugzilla">
+Bugzilla</a>.  Please include the log file as well as complete
+information about your system (the output from the command "uname -a"
+and the compiler/version).
+
+Once you have built OPT++, we recommend that you run the regression
+tests.  You can do this by typing
+
+       \verbatim
+          make check
+       \endverbatim
+
+Again, we recommend you direct the output to a file, i.e.
+
+       \verbatim
+          make check >& check.log
+       \endverbatim
+
+The regression tests are discussed further in the <a href="#test">
+Testing</a> section.  In the meantime, there are a number of other
+useful make options available. 
+
+In order to install OPT++ in /usr/local or another directory specified
+at configure time, type
+
+       \verbatim
+          make install
+       \endverbatim
+
+ In order to remove object files and the libraries that were created
+during make, type
+
+       \verbatim
+          make clean
+       \endverbatim
+
+To remove not only the files mentioned above, but also the Makefiles
+and other files generated during the configure, issue the command
+
+       \verbatim
+          make distclean
+       \endverbatim
+
+A description of the regression tests follows in the next section.
+If, however, you are anxious to get started, a brief overview of how
+to use OPT++ can be found in the <a href="#usage"> Using OPT++</a>
+section.  A more extensive tutorial can be found in the <a
+href="SetUp.html"> Setting up and Solving an Optimization Problem</a>
+section.
+
+\section test Step 3 - Testing
+
+It is strongly recommended that you run the regression tests to ensure
+that OPT++ operates correctly on your machine.  From the top-level
+OPT++ directory, type
+
+       \verbatim
+          make check >& check.log
+       \endverbatim
+
+If any of the tests failed, report problems to the authors via <a
+href="http://software.sandia.gov/bugzilla"> Bugzilla</a>.  Please
+include the log file and the output from the failed test, as well as
+complete information about your system (the output from the command
+"uname -a" and the compiler/version).
+
+\section usage Using OPT++
+
+We recommend looking at the <a href="SetUp.html"> Setting up and
+Solving an Optimization Problem</a> section to learn how to set up and
+solve optimization problems with OPT++.  However, for those who
+like to jump right in, there are plenty of examples in the tests/*
+directories.  By mimicking their form, you will likely be able to get
+your problem up and running.  A word of warning - the code in the
+example files is not particularly well documented.  The examples are
+fully documented in the HTML documentation.
+
+In short, there are several things the user must provide.  The first
+is a main routine written in C++.  In this routine, the user must do
+the following:
+
+<ol>
+	<li> Construct the problem object, which includes pointers to the
+	   subroutines that initialize and evaluate the objective
+	   function and the constraints.
+	<li> Construct the object corresponding to the algorithm to be
+	   used and set any algorithmics parameters.
+	<li> Call the optimization method.
+</ol>
+
+In addition to the main routine, the user must provide the C++
+subroutines that perform the initializations and the evaluations of
+the functions and the constraints.  (Note: These C++ subroutines may
+be wrappers to C or Fortran subroutines or to system calls.)  As
+mentioned before, there are many examples in the tests/* directories,
+and they are thoroughly documented in the HTML documentation.
+
+Building your executable should be fairly straightforward.  Below is
+the recommended set of steps to follow.
+
+<ol>
+	<li> Determine which defines you need.  If the C++ compiler
+	   you are using supports the ANSI standard style of C header
+	   files, you will need
+
+       \verbatim
+          -DHAVE_STD
+       \endverbatim
+
+	   If the C++ compiler you are using supports namespaces, you
+	   will need
+
+       \verbatim
+          -DHAVE_NAMESPACES
+       \endverbatim
+
+	   If you are using the parallel version of OPT++, you will
+	   need
+
+       \verbatim
+          -DWITH_MPI
+       \endverbatim
+
+	   If you are using the parallel version of OPT++ with MPICH2,
+	   you may additionally need
+
+       \verbatim
+          -DMPICH_IGNORE_CXX_SEEK
+       \endverbatim
+
+	<li> Determine the location of the header files.  If you did a
+	   "make install", they will be located in the "include"
+	   subdirectory of the directory in which OPT++ is installed.
+	   If that directory is not one your compiler normally checks,
+	   you will need
+
+       \verbatim
+          -IOPT++_install_directory/include
+       \endverbatim
+
+	   If you did not do a "make install", the header files will
+	   almost certainly be in a directory not checked by your
+	   compiler.  Thus, you will need
+
+       \verbatim
+          -IOPT++_top_directory/include -IOPT++_top_directory/newmat11
+       \endverbatim
+
+	<li> Determine the location of the libraries.  If you did a
+	   "make install", they will be located in the "lib"
+	   subdirectory of the directory in which OPT++ is installed.
+	   If that directory is not one your compiler normally checks,
+	   you will need
+
+       \verbatim
+          -LOPT++_install_directory/lib
+       \endverbatim
+
+	   If you did not do a "make install", the libraries will
+	   almost certainly be in a directory not checked by your
+	   compiler.  Thus, you will need
+
+       \verbatim
+          -LOPT++_top_directory/lib/.libs
+       \endverbatim
+
+	<li> If you configured OPT++ for the default behavior of using
+	   the BLAS and/or you configure OPT++ to use NPSOL, you will
+	   need the appropriate Fortran libraries for linking.  The
+	   easiest way to get these is to look in the Makefile for the
+	   value of FLIBS.
+
+	<li> If all is right in the world, the following format for
+	   your compilation command should work:
+
+       \verbatim
+          $CXX <defines> <includes> myMain.C myF.C <lib \
+	  directory> -lopt -lnewmat -l$BLAS_LIB $FLIBS 
+       \endverbatim
+
+	   $CXX is the C++ compiler you are using.  \<defines\> and
+	   \<includes\> are the flags determined in steps 1-2.  myMain.C
+	   is your main routine, and myF.C contains your function
+	   evaluations.  (Note: If you have put them both in one file,
+	   you need only list that single file here.)  \<lib_directory\>
+	   was determined in step 3.  -lopt and -lnewmat are the two
+	   OPT++ libraries.  $BLAS_LIB is the BLAS library you are
+	   using, and $FLIBS is the list of Fortran libraries
+	   determined in step 4.
+</ol>
+
+And, of course, if you have problems, report them to the authors via
+<a href="http://software.sandia.gov/bugzilla">Bugzilla</a>.  Please
+include the log file and the output from the failed test, as well as
+complete information about your system (the output from the command
+"uname -a" and the compiler/version).
+
+A more extensive tutorial on using OPT++ can be found in the <a
+href="SetUp.html"> Setting up and Solving an Optimization Problem</a>
+section.
+
+\section platforms Platform Information
+
+The serial version of OPT++ has been built and tested on the following
+platforms:
+
+<table>
+<tr>
+<td><b>ARCH</b>
+<td><b>OS</b>
+<td><b>COMPILER</b>
+<tr>
+<td> \c i686
+<td> Linux 2.4.21-* <br>
+     Linux 2.6.9-* <br>
+     Linux 2.6.20-*
+<td> GNU 3.2.2, 3.2.3, 3.4.3, 3.4.5, 3.4.6, 4.0.2, 4.1.1 <br>
+     Intel 8.1, 9.0 <br>
+     PGI 5.2, 6.0, 6.2
+<tr>
+<td> \c i686
+<td> Cygwin 1.5.20-1 <br>
+     Cygwin 1.5.25
+<td> GNU 3.4.4 <br>
+<tr>
+<td> \c x86_64 (Intel)
+<td> Linux 2.6.9-34.0.2 <br>
+<td> GNU 3.4.5
+<tr>
+<td> \c x86_64 (AMD)
+<td> Linux 2.4.21-37 <br>
+     Linux 2.6.9-42.0.2
+<td> GNU 3.2.2, 3.2.3, 3.4.3, 3.4.6 <br>
+     Intel 8.1, 9.0, 9.1 <br>
+     PGI 6.2
+<tr>
+<td> \c Mac PowerPC
+<td> OS X 10.3.9 <br>
+<td> GNU 3.3
+<tr>
+<td> \c SUN
+<td> Solaris 2.10
+<td> CC/cc 5.7  <br>
+     GNU 3.3.2
+<tr>
+<td> \c SGI
+<td> IRIX 6.5
+<td> CC/cc MIPSPro 7.4.2
+<tr>
+<td> \c IBM
+<td> AIX 5.2
+<td> xlC/xlc 7.0 <br> 
+</table>
+
+It is possible the OPT++ will also build with the MinGW compilers and
+the Microsoft compilers; however, there are no guarantees.  OPT++ is not
+yet stable on those platforms and has not been fully tested.
+
+The parallel version of OPT++ has only been built and tested on an
+Intel Linux machine with OpenMPI 1.1, MPICH2 1.0.3, MPICH 1.2.7p1, LAM
+MPI 7.1.2, and LA-MPI 1.5.15; however, we expect it will work on the
+above-supported platforms with other versions and implementations of
+MPI.  The GUI/XML interface has only been tested on Intel Linux
+machines.
+
+\section issues Known Issues
+
+Alas, there a few issues that we are aware of:
+
+<ol>
+	<li> BLAS: The m4 macro that we obtained to detect BLAS
+	   libraries is a few years old, so there are a couple of
+	   cases where they are not detected correctly.
+
+		- Intel compilers (icpc/icc) - The Math Kernel
+		  Libraries (MKL) are not detected.  If you want to
+		  make use of the BLAS from MKL, you will have to set
+		  the BLAS_LIBS environment variable to the
+		  appropriate path.
+		- MAC OS X - The BLAS are implemented a little
+		  differently on the MAC.  In particular, they are
+		  implemented as frameworks and thus not detected as
+		  libraries.  If you want to use the native MAC
+		  implementation, set the LDFLAGS environment variable
+		  to "-framework vecLib".
+		- SUN compilers (CC/cc) - Depending on which version
+		  of the compilers you have, you may or may not have a
+		  problem.  The macro does not take into account some
+		  recent changes associated with the newer
+		  implementations.  If there are problems, they will
+		  show up at link time.  In that case, try setting the
+		  BLAS_LIBS environment variable to
+		  "/opt/SUNWspro/lib/libsunperf.so".
+
+	   We will work on correcting these issues.
+
+	<li> NPSOL: We had problems linking in NPSOL on the MAC
+	   platform.  Try explicitly setting your FLIBS environment
+	   variable to "-L/sw/lib -lfrtbegin -lg2c -lm -lgcc".  That
+	   may or may not do the trick.
+
+	   We also had problems linking NPSOL with the GNU 4.0.2
+	   compilers.  We will keep working on both these issues.
+
+	<li> XML/GUI: The XML and GUI interface has not been updated
+	   yet, so it is currently not available with this version.
+	   We will get this finished and distribute a patch file as
+	   quickly as we can.
+
+	<li> PGI Compilers: In our testing, we found that autotools was
+	   adding an invalid item to the list of libraries when using
+	   the PGI compilers.  This causes the build of the test
+	   problems to break.  We have not yet isolated the problem,
+	   but in the the meantime, it is an easy fix.  If "make
+	   check" fails, go into the "Makefile" in each of the test
+	   directories (tests/constraints, tests/hock, tests/npsol,
+	   tests/parallel, and tests/uncon) and search for "FLIBS".
+	   Delete the first entry in the list, "-lm'"...it is that
+	   extra single quote that is the culprit.  Then try "make
+	   check" again.
+</ol>
+
+\section disclaimer The Standard Absolution of Responsibility
+
+WARNING: This is RESEARCH code, and we all know what that means!
+While it should run on most UNIX platforms with ANSI-compliant C++/C
+compilers, there are no guarantees.  On the bright side, we are happy
+to improve the reliability of the code.  Please report bugs to the
+authors via <a href="http://sofware.sandia.gov/bugzilla">Bugzilla</a>,
+including complete information about your system (the output from the
+command "uname -a" and the compiler/version), the exact error messages
+generated, and any output produced.  If possible, a small piece of
+code that generates the bug would be most helpful.
+
+<p> Next Section:  \ref SetUp | Back to the <a href="index.html"> Main
+Page</a> </p>
+
+Last revised <em> May 1, 2007</em>
+
+
+*/

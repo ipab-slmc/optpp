@@ -1,0 +1,81 @@
+/** \mainpage OPT++ 2.4 Documentation
+
+\section intro Introduction
+
+OPT++ is a C++ library of nonlinear optimization algorithms.  The
+motivation for this package is to build an environment for the rapid
+prototyping and development of new optimization algorithms.  In
+particular, the focus is on robust and efficient algorithms for
+problems in which the function and constraint evaluations require the
+execution of an expensive computer simulation.
+
+Currently, OPT++ includes the classic Newton methods, a nonlinear
+interior-point method, parallel direct search, a trust region -
+parallel direct search hybrid, a generating set search, and a wrapper
+to NPSOL.  Between these methods, a wide range of problems can be
+solved, e.g. with or without constraints, with or without analytic
+gradients, simulation based, etc.
+
+OPT++ has been copyrighted by Sandia Corporation and is freely
+distributed under the GNU Lesser General Public License.  Please see
+the <A HREF = "COPYRIGHT.html">Copyright Information</A> and the <A
+HREF = "http://www.gnu.org/copyleft/lesser.html">GNU Lesser General
+Public License</A> for more information.
+
+\section userguide User's guide 
+
+<ul>
+<LI> \ref InstallDoc
+<LI> \ref SetUp
+<LI> \ref GUI_XMLDoc
+<LI> \ref Classification
+<LI> \ref MethodsDoc
+<LI> \ref ControlParameters
+<LI> \ref FAQS
+<LI> \ref ReferencesDoc
+</UL>
+
+\section authors The Culprits
+
+<TABLE>
+<TR>
+<TD> Authors
+<TD> <A HREF = "http://www.nersc.gov/~meza">Juan C. Meza</A> <BR>
+     Lawrence Berkeley National Laboratory <BR>
+     <A HREF = "http://csmr.ca.sandia.gov/~pdhough">Patricia
+     D. Hough</A> <BR>
+     Sandia National Laboratories <BR>
+     <A HREF = "http://csmr.ca.sandia.gov/~pwillia">Pamela
+     J. Williams</A> <BR>
+     Sandia National Laboratories <BR>
+     Ricardo A. Oliva <BR>
+     Sabio Labs, Inc. <BR>
+</TR>
+<TR>
+<TD> Bug Reports
+<TD> <A HREF = "http://software.sandia.gov/bugzilla">Bugzilla</A>
+<BR>
+</TR>
+<TR>
+<TD> Contact
+<TD> <A HREF = "mailto:opt++-developers@software.sandia.gov">OPT++ Developers</A>
+<BR>
+</TR>
+<TR>
+<TD> URLs
+<TD> <A HREF = "http://csmr.ca.sandia.gov/projects/opt++">http://csmr.ca.sandia.gov/projects/opt++</A>
+       <BR>
+     <A HREF = "http://www.nersc.gov/~meza/projects/opt++">http://www.nersc.gov/~meza/projects/opt++</A>
+       <BR>
+</TR>
+</TABLE>
+
+Thanks to Sherae Daniel of the University of Maryland and Andrew
+Rothfuss of Sandia National Labs for help with the GUI/XML interface.
+Thanks also to Edward Walsh and Shane Brown, both of Sandia National
+Labs, for their assistance in converting the build system to
+autotools.	
+
+Last revised <em> May 1, 2007</em>
+
+*/

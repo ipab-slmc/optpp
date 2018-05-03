@@ -1,0 +1,448 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="635"
+   name=""
+   committed-date="2007-05-01T22:43:10.424906Z"
+   url="https://software.sandia.gov:/svn/public/optpp/optpp/trunk/docs/guide"
+   last-author="pwillia"
+   kind="dir"
+   uuid="769e035e-e624-0410-925d-addec6342ffc"
+   revision="635"/>
+<entry
+   committed-rev="632"
+   name="example2.html"
+   text-time="2007-05-01T23:11:59.000000Z"
+   committed-date="2007-04-27T19:29:03.040540Z"
+   checksum="0216afaa861e4f0dd7eb87d7cf38da88"
+   last-author="pwillia"
+   kind="file"
+   prop-time="2007-05-01T23:11:59.000000Z"/>
+<entry
+   committed-rev="598"
+   name="NonLinearConstraints.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-09-01T00:16:05.000000Z"
+   checksum="63942af35e12ead6f43c22692e59e052"
+   last-author="pdhough"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+<entry
+   committed-rev="598"
+   name="ConstrainedProblems.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-09-01T00:16:05.000000Z"
+   checksum="8939a6c6e4c659641e8f26d5f93d492b"
+   last-author="pdhough"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+<entry
+   committed-rev="598"
+   name="UnconstrainedProblems.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-09-01T00:16:05.000000Z"
+   checksum="572d2d9c25749870d58ded6f1fc2ce0f"
+   last-author="pdhough"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+<entry
+   committed-rev="558"
+   name="OptionsDoc.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-06-30T23:43:26.000000Z"
+   checksum="cce40a8baa2541e3f2424fab42ba1dd6"
+   last-author="pdhough"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+<entry
+   committed-rev="598"
+   name="subroutine2.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-09-01T00:16:05.000000Z"
+   checksum="53af017eae218931c3856f487a4dcd67"
+   last-author="pdhough"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+<entry
+   committed-rev="558"
+   name="xml1.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-06-30T23:43:26.000000Z"
+   checksum="5ff8e4eadb9ce91dae68840953818afd"
+   last-author="pdhough"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+<entry
+   committed-rev="558"
+   name="License.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-06-30T23:43:26.000000Z"
+   checksum="a5c80204c254dcf54e113cc67135966a"
+   last-author="pdhough"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+<entry
+   committed-rev="558"
+   name="xml3.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-06-30T23:43:26.000000Z"
+   checksum="bb90ffc22fc3647d4203d763725ffedd"
+   last-author="pdhough"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+<entry
+   committed-rev="620"
+   name="tstcg.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-09-15T20:54:17.000000Z"
+   checksum="521cd2663ff65355ac089df60e220d39"
+   last-author="pwillia"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+<entry
+   committed-rev="620"
+   name="tstnpsol.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-09-15T20:54:17.000000Z"
+   checksum="ef975373caccac778f88eea70f504188"
+   last-author="pwillia"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+<entry
+   committed-rev="620"
+   name="tstqnewton.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-09-15T20:54:17.000000Z"
+   checksum="e53179f6194a1f55cd452fcd699423ba"
+   last-author="pwillia"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+<entry
+   committed-rev="620"
+   name="tstgss.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-09-15T20:54:17.000000Z"
+   checksum="a2de81e5eb0a2176d52fd0de305c8b4b"
+   last-author="pwillia"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+<entry
+   committed-rev="620"
+   name="tsttrpds.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-09-15T20:54:17.000000Z"
+   checksum="d875a99b7c8c53c1270e3608ff4b30e3"
+   last-author="pwillia"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+<entry
+   committed-rev="595"
+   name="header.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-08-30T00:23:58.000000Z"
+   checksum="2354ba372267432269ac08284514f5ab"
+   last-author="pdhough"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+<entry
+   committed-rev="598"
+   name="GUI_XMLDoc.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-09-01T00:16:05.000000Z"
+   checksum="a46b750ac3934fc50b54cea1f4027fdc"
+   last-author="pdhough"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+<entry
+   committed-rev="620"
+   name="tstbcqnewton.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-09-15T20:54:17.000000Z"
+   checksum="28cd27399ed1d55d8c4054e0c688d996"
+   last-author="pwillia"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+<entry
+   committed-rev="558"
+   name="Classification.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-06-30T23:43:26.000000Z"
+   checksum="8bee3485f90bc3a6edde28035c34e0cc"
+   last-author="pdhough"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+<entry
+   committed-rev="636"
+   name="InstallDoc.html"
+   text-time="2007-05-01T23:15:26.000000Z"
+   committed-date="2007-05-01T23:20:51.072149Z"
+   checksum="8da75ed6716eafab6b7eff8c96d0fd11"
+   last-author="pdhough"
+   kind="file"
+   prop-time="2007-05-01T23:11:59.000000Z"
+   revision="636"/>
+<entry
+   committed-rev="598"
+   name="BoundConstraints.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-09-01T00:16:05.000000Z"
+   checksum="1e24349bea382d2e6c5b2d38f8216810"
+   last-author="pdhough"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+<entry
+   committed-rev="598"
+   name="AboutDoc.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-09-01T00:16:05.000000Z"
+   checksum="6236eb87f817488fbca71a612c40f2ba"
+   last-author="pdhough"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+<entry
+   committed-rev="632"
+   name="SetUp.html"
+   text-time="2007-05-01T23:11:59.000000Z"
+   committed-date="2007-04-27T19:29:03.040540Z"
+   checksum="534c1004b20408c5f6b8b3a913ed6f7d"
+   last-author="pwillia"
+   kind="file"
+   prop-time="2007-05-01T23:11:59.000000Z"/>
+<entry
+   committed-rev="632"
+   name="tstnips.html"
+   text-time="2007-05-01T23:11:59.000000Z"
+   committed-date="2007-04-27T19:29:03.040540Z"
+   checksum="642eeb6e7c7be34ed27b49c1dc2f85c3"
+   last-author="pwillia"
+   kind="file"
+   prop-time="2007-05-01T23:11:59.000000Z"/>
+<entry
+   committed-rev="558"
+   name="example2_out.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-06-30T23:43:26.000000Z"
+   checksum="6311bc0c84de63db9c4b13ef38ebb724"
+   last-author="pdhough"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+<entry
+   committed-rev="598"
+   name="BoundConstrainedProblems.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-09-01T00:16:05.000000Z"
+   checksum="38808043d6009d502ed22b637b6392de"
+   last-author="pdhough"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+<entry
+   committed-rev="635"
+   name="AlternativeFunctions.html"
+   text-time="2007-05-01T23:11:59.000000Z"
+   committed-date="2007-05-01T22:43:10.424906Z"
+   checksum="82bdffab062f36eed985abebfcacfead"
+   last-author="pwillia"
+   kind="file"
+   prop-time="2007-05-01T23:11:59.000000Z"/>
+<entry
+   committed-rev="595"
+   name="ReferencesDoc.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-08-30T00:23:58.000000Z"
+   checksum="cd31e63e9fd33349a06270fc21087ee8"
+   last-author="pdhough"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+<entry
+   committed-rev="558"
+   name="subroutine2_out.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-06-30T23:43:26.000000Z"
+   checksum="565a75c08753c4f6259ecdbfef143151"
+   last-author="pdhough"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+<entry
+   committed-rev="575"
+   name="tstcg_out.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-07-13T17:55:47.000000Z"
+   checksum="77f3a7f2fc60210e76aadad949c25163"
+   last-author="pwillia"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+<entry
+   committed-rev="632"
+   name="example1.html"
+   text-time="2007-05-01T23:11:59.000000Z"
+   committed-date="2007-04-27T19:29:03.040540Z"
+   checksum="35d0b90299187a571c33149718332c03"
+   last-author="pwillia"
+   kind="file"
+   prop-time="2007-05-01T23:11:59.000000Z"/>
+<entry
+   committed-rev="598"
+   name="subroutine1.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-09-01T00:16:05.000000Z"
+   checksum="f11aefcc75aeff949face30aa31f7b90"
+   last-author="pdhough"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+<entry
+   committed-rev="636"
+   name="MainPage.html"
+   text-time="2007-05-01T23:15:45.000000Z"
+   committed-date="2007-05-01T23:20:51.072149Z"
+   checksum="0f5c10404e0a55d7764fe0273dfd5518"
+   last-author="pdhough"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"
+   revision="636"/>
+<entry
+   committed-rev="620"
+   name="tstpds.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-09-15T20:54:17.000000Z"
+   checksum="492231225f46d84c999f574db390a961"
+   last-author="pwillia"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+<entry
+   committed-rev="558"
+   name="xml2.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-06-30T23:43:26.000000Z"
+   checksum="e1488af9cea159aeaee8160d738a255a"
+   last-author="pdhough"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+<entry
+   committed-rev="598"
+   name="gensetGuide-format.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-09-01T00:16:05.000000Z"
+   checksum="4d5d95f005d74402113789fc0ed9c109"
+   last-author="pdhough"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+<entry
+   committed-rev="558"
+   name="MethodsDoc.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-06-30T23:43:26.000000Z"
+   checksum="a49ccc7a5bc043b7cf1058a4acff0cc9"
+   last-author="pdhough"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+<entry
+   committed-rev="636"
+   name="FAQS.html"
+   text-time="2007-05-01T23:14:36.000000Z"
+   committed-date="2007-05-01T23:20:51.072149Z"
+   checksum="1d48cb2a5adb8f6a7058c2e08e309449"
+   last-author="pdhough"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"
+   revision="636"/>
+<entry
+   committed-rev="575"
+   name="ConstraintsDoc.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-07-13T17:55:47.000000Z"
+   checksum="036691520bb0c73ecfd6e5461e69e88f"
+   last-author="pwillia"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+<entry
+   committed-rev="598"
+   name="footer.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-09-01T00:16:05.000000Z"
+   checksum="2e0ebd0fcff897381d00022b7a4ea4c8"
+   last-author="pdhough"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+<entry
+   committed-rev="598"
+   name="CompoundConstraintsDoc.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-09-01T00:16:05.000000Z"
+   checksum="b9775a7f7cff19ed6b80e01078557f4d"
+   last-author="pdhough"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+<entry
+   committed-rev="598"
+   name="LinearConstraints.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-09-01T00:16:05.000000Z"
+   checksum="f0f6180176ac1e517a366254f492653c"
+   last-author="pdhough"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+<entry
+   committed-rev="558"
+   name="example1_out.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-06-30T23:43:26.000000Z"
+   checksum="5423d92d7c7c1ee9d1c7563124d55e6c"
+   last-author="pdhough"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+<entry
+   committed-rev="598"
+   name="UnconstrainedObject.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-09-01T00:16:05.000000Z"
+   checksum="b2e89d31c6be83248beb764d6d2736e5"
+   last-author="pdhough"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+<entry
+   committed-rev="598"
+   name="ParallelOptimization.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-09-01T00:16:05.000000Z"
+   checksum="e236a437d42a14bf6a7eb6a0251f0477"
+   last-author="pdhough"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+<entry
+   committed-rev="598"
+   name="ControlParameters.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-09-01T00:16:05.000000Z"
+   checksum="6cc431935642e85339de4e210606072c"
+   last-author="pdhough"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+<entry
+   committed-rev="558"
+   name="subroutine1_out.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-06-30T23:43:26.000000Z"
+   checksum="80c4bb97ba07b89047515701796e31a5"
+   last-author="pdhough"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+<entry
+   committed-rev="558"
+   name="COPYRIGHT.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-06-30T23:43:26.000000Z"
+   checksum="d4f4a5b0cfc3962bb2602aaa7b31ba48"
+   last-author="pdhough"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+<entry
+   committed-rev="620"
+   name="tstbcnips.html"
+   text-time="2007-04-27T16:31:21.000000Z"
+   committed-date="2006-09-15T20:54:17.000000Z"
+   checksum="ef837825cc67c82b78b3ad9f119ac35e"
+   last-author="pwillia"
+   kind="file"
+   prop-time="2007-04-27T16:31:21.000000Z"/>
+</wc-entries>

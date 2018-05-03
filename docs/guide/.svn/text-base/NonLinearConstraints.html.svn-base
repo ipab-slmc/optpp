@@ -1,0 +1,134 @@
+/** \page NonLinearConstraints Constructing nonlinear constraints 
+
+In this section, you will learn about 
+<ul>
+	<li> \ref NonLinearConstraintFunctions,
+	<li> \ref NonLinearEquations, and
+	<li> \ref NonLinearInequalities
+</ul>
+
+\section NonLinearConstraintFunctions Declaring Nonlinear Constraint Functions
+Like the objective function, the nonlinear constraint functions are 
+classified according to the availability of the derivatives.
+However, the argument list of the constructors for the two objects differ
+in the storage types for the function's value, gradient, and Hessian.
+<ul>
+	<li> \code
+typedef void (*USERNLNCON0)(int, const ColumnVector&, ColumnVector&, int&);
+\endcode
+For a nonlinear constraint the third argument is a ColumnVector because
+storage is needed for \a ncnln values. The corresponding declaration for
+a \a trig_constraint follows:
+\code
+   void trig_constraint(ndim, x, cvalue, result);
+\endcode
+
+<li> \code
+typedef void (*USERNLNCON1)(int, int, const ColumnVector&, ColumnVector&, 
+                            Matrix&, int&);
+\endcode
+An example for a constraint function with
+first derivative information available is
+\code
+   void rosen_constraint(mode, n, x, cvalue, cJacobian, result);
+\endcode
+The fifth argument, a Matrix, contains the Jacobian of the
+constraints. 
+
+<li> \code
+typedef void (*USERNLNCON2)(int, int, const ColumnVector&, ColumnVector&, 
+			    Matrix&, OptppArray<SymmetricMatrix>&, int&);
+\endcode
+The declaration for a constraint function with analytic Hessian follows:
+\code
+   void illum2_constraint(mode, n, x, cvalue, cJacobian, cHessian, result);
+\endcode
+The sixth argument, an array of symmetric matrices, contains the 
+Hessians of the constraints.
+</ul>
+Now, we turn our focus to the construction of nonlinear equations.
+
+\section NonLinearEquations Creating Nonlinear Equations 
+The nonlinear equation is written as \f[ h(x) =  0. \f]
+
+There are two NonLinearEquation constructors.
+The first constructor requires two parameters, a pointer to
+an NLP object and an integer argument for the number of nonlinear equations, 
+which defaults to one.  The right-hand side is set to zero.
+For example,
+\code
+   NonLinearEquation(NLP* nlprob, int numconstraints = 1);
+\endcode
+
+The second constructor 
+\code
+   NonLinearEquation(NLP* nlprob, const ColumnVector& rhs, 
+	            int numconstraints = 1);
+\endcode
+permits a nonzero value for the right-hand side. 
+
+The following code fragment creates 
+\f[ h_j(x) = j,  \forall j=1,2,3. \f]
+\code
+   //  Number of nonlinear equations 
+   int ncnln    = 3;
+   ColumnVector b(ncnln);
+   
+   //  Create a pointer to an NLP object 
+   NLP* nlprob  = new NLP( new NLF1(n, ncnln, nleqn, init_nleqn) );
+
+   //  Initialize the right-hand side of the equations 
+   b << 1.0 << 2.0 << 3.0;
+
+   //  Create a set of nonlinear equations 
+   NonLinearEquation(nlprob, b, ncnln);
+\endcode
+
+\section NonLinearInequalities Creating Nonlinear Inequalities
+In OPT++, the standard form for a nonlinear inequality is
+\f[ g(x) \ge  0. \f]
+The corresponding constructor is
+\code
+   NonLinearInequality(NLP* nlprob, int numconstraints = 1);
+\endcode
+
+To define a nonzero right-hand side for the inequalities, use the following
+constructor:
+\code
+   NonLinearInequality(NLP* nlprob, const ColumnVector& rhs, 
+                       int numconstraints = 1);
+\endcode
+
+If the user wants nonzero upper bounds on the constraints, such as
+\f[ g(x) \le  b, \f] then they must use the following constructor:
+\code
+   NonLinearInequality(NLP* nlprob, const ColumnVector& rhs, 
+                       const bool flag, int numconstraints = 1);
+\endcode
+
+To create lower and upper bounds for the constraints, use
+\code
+   NonLinearInequality(NLP* nlprob, const ColumnVector& lower, 
+                       const ColumnVector& upper, int numconstraints = 1);
+\endcode
+which generates 
+\f[l \le g(x) \le  u. \f]
+
+<p>
+OPT++ does not support sparse constraints.  Therefore, a bound must be given 
+for each variable even if only a subset of the constraints have finite bounds.
+An infinite lower bound is specified by
+\f[l_i \le -1.0e10. \f]
+Similarly, an infinite upper bound is specified by
+\f[u_i \ge  1.0e10. \f]
+</p>
+
+<p> <a href="CompoundConstraintsDoc.html">Next Section: Constructing a compound
+	constraint </a> | <a href="index.html">Back to Main Page</a> </p> 
+
+Last revised <em> July 13, 2006</em>
+
+*/
+
+
+
