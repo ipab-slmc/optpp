@@ -330,6 +330,7 @@ void OptLBFGS::optimize()
   int cp, npt = 0, point = 0, bound; // circular indices
   double truestep; // used for output
   int maxiter = tol.getMaxIter();
+  iter_taken = 0;  // Initialise getIter() with 0
 
   printIter(0, nlp->getF(), gnorm, 0.0, 0.0, 0);  
   updateModel(0, n, nlp->getXc());
