@@ -121,8 +121,8 @@ int mcsrch(NLP1* nlp, ColumnVector& s, ostream *fout, double *stp,
   static double  dgm, dgx, dgy, fxm, fym, stx, sty;
 
   int    siter;
-  //int    maxiter = itnmax;
-  int    maxiter = 10;
+  int    maxiter = itnmax;
+  // int    maxiter = 10;
   int    n = nlp->getDim();
 
   double fvalue;
